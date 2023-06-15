@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_task_form2_inherit_custom_service_flow" model="ir.ui.view">
+            <field name="name">view.task.form2.inherit_custom_service_flow</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" name="filter_mo" type="object" icon="fa-tasks"
+                            attrs="{'invisible': [('is_work_preparation', '=', False)]}">
+                        <field string="Manufacturing Orders" name="mo_count" widget="statinfo"/>
+                    </button>
+                    <!-- <button class="oe_stat_button" name="filter_mo" type="object" icon="fa-tasks">
+                        <field string="Manufacturing Orders" name="mo_count" widget="statinfo"/>
+                    </button> -->
+                </xpath>
+                <xpath expr="//field[@name='user_ids']" position="after">
+                    <field name="is_work_preparation" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="edit_project_inherit" model="ir.ui.view">
+            <field name="name">edit.project.inherit</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="before">
+                    <field name="is_work_preparation"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
