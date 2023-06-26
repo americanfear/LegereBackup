@@ -12,6 +12,9 @@
                         <label for="is_custom"/>
                     </div>
                 </div>
+                <xpath expr="//field[@name='detailed_type']" position="after">
+                    <field name="custom_project_id" attrs="{'invisible':[('is_custom', '=', False)], 'required':[('is_custom', '!=', False)]}" options="{'no_create_edit': 1}" domain="[('is_work_preparation', '=', 1)]"/>
+                </xpath>
             </field>
         </record>
     </data>

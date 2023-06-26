@@ -8,10 +8,9 @@
     'author': 'Dream Mountain Services',
     'website': 'https://DreamMtn.Services',
     'support': 'support@DreamMtn.Services',   
-    'depends': ['sale_management', 'project', 'mrp'],
+    'depends': ['sale_management', 'project', 'mrp', 'purchase'],
     'data': [
         'views/sale_order_views.xml',
-        'views/res_config_settings_view.xml',
         'views/project_views.xml',        
         'views/product_template_view.xml'
     ],
