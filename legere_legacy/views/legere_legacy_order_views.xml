@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="legere_order_tree" model="ir.ui.view">
+            <field name="name">legere.order.tree</field>
+            <field name="model">legere.order</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="OrderNumber"/>
+                    <field name="LegereCustomerNumber"/>
+                    <field name="PurchaseOrderNumber"/>
+                    <field name="Terms"/>
+                    <field name="InvoiceNumber"/>
+                    <field name="Subtotal"/>
+                    <field name="OrderTotal"/>
+                    <field name="Status"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="legere_order_form" model="ir.ui.view">
+            <field name="name">legere.order.form</field>
+            <field name="model">legere.order</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_legere_invoices"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o"
+                                attrs="{'invisible': [('InvoiceCount', '=', 0)]}">
+                                <field name="InvoiceCount" widget="statinfo" string="Invoices"/>
+                            </button>
+                        </div>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field name="OrderNumber"/>
+                            </h1>
+                            <group>
+                                <group>
+                                    <field name="LegereCustomerNumber"/>
+                                    <field name="BillToName"/>
+                                    <field name="BillToAddress"/>
+                                    <field name="BillToCity"/>
+                                    <field name="BillToState"/>
+                                    <field name="BillToZip"/>
+                                </group>
+                                <group>
+                                    <field name="ShipToName"/>
+                                    <field name="ShipToAddress"/>
+                                    <field name="ShipToAddress2"/>
+                                    <field name="ShipToCity"/>
+                                    <field name="ShipToState"/>
+                                    <field name="ShipToZip"/>
+                                </group>
+                            </group>
+                        </div>
+                        <notebook>
+                            <page string='Parts'>
+                                <field name="OrderParts">
+                                    <tree>
+                                        <field name="ProductNumber"/>
+                                        <field name="ProductDescription"/>
+                                        <field name="Size"/>
+                                        <field name="UnitPrice"/>
+                                        <field name="QtyOrdered"/>
+                                        <field name="QtyShipped"/>
+                                        <field name="Total"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="ProductNumber"/>
+                                                <field name="ProductDescription"/>
+                                                <field name="Size"/>
+                                                <field name="UnitPrice"/>
+                                                <field name="QtyOrdered"/>
+                                                <field name="QtyShipped"/>
+                                                <field name="Total"/>
+                                            </group>
+                                            <group>
+                                                <field name="OrderUID"/>
+                                                <field name="CustInternalNumber"/>
+                                                <field name="SalesPersonId"/>
+                                                <field name="Territory"/>
+                                                <field name="CommissionCode"/>
+                                                <field name="PrivateLabel"/>
+                                                <field name="Sample"/>
+                                                <field name="PriceBreak"/>
+                                                <field name="NewProduct"/>
+                                                <field name="PriceChanged"/>
+                                                <field name="UniqueID"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                                <field name="SpecialInstructions" placeholder='Special Instructions....' nolabel='1'/>
+                            </page>
+                            <page string='Order Information'>
+                                <group>
+                                    <group>
+                                        <field name="DateOrderEntered"/>
+                                        <field name="PurchaseOrderNumber"/>
+                                        <field name="Terms"/>
+                                        <field name="InvoiceNumber"/>
+                                        <field name="DoctorName"/>
+                                        <field name="DoctorType"/>
+                                        <field name="OrderedBy"/>
+                                        <field name="FilledBy"/>
+                                        <field name="InspectedBy"/>
+                                        <field name="TakenBy"/>
+                                        <field name="VerifiedBy"/>
+                                    </group>
+                                    <group>
+                                        <field name="CODCharge"/>
+                                        <field name="COD"/>
+                                        <field name="CODCash"/>
+                                        <field name="AddBalanceToCOD"/>
+                                        <field name="CODTotal"/>
+                                        <field name="HandlingCharge"/>
+                                        <field name="Subtotal"/>
+                                        <field name="OrderTotal"/>
+                                        <field name="Status"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string='Other Information'>
+                                <group>
+                                    <group>
+                                        <field name="CustTelephone"/>
+                                        <field name="FaxNumber"/>
+                                        <field name="PhoneNumber"/>
+                                        <field name="Source"/>
+                                        <field name="ShippingType"/>
+                                        <field name="ShippingCharges"/>
+                                        <field name="DateShipped"/>
+                                        <field name="CreditStatus"/>
+                                        <field name="PrepaidCheckNumber"/>
+                                        <field name="CreditCardNumber"/>
+                                        <field name="CCExpDate"/>
+                                        <field name="CreditLimit"/>
+                                        <field name="ReasonPending"/>
+                                        <field name="LegereUserId"/>
+                                        <field name="Territory"/>
+                                        <field name="AccountStatus"/>
+                                        <field name="SpecialPricing"/>
+                                        <field name="TrackingNumber"/>
+                                    </group>
+                                    <group>
+                                        <field name="TypeOfNameChange"/>
+                                        <field name="ChangeData"/>
+                                        <field name="LicenseNumber"/>
+                                        <field name="LicenseExpiration"/>
+                                        <field name="DEANumber"/>
+                                        <field name="DEAExpiration"/>
+                                        <field name="ShowOnReports"/>
+                                        <field name="OneTimeOnly"/>
+                                        <field name="WithOrderNumber"/>
+                                        <field name="NPINumber"/>
+                                        <field name="OlympiaNum"/>
+                                        <field name="PendingCat"/>
+                                        <field name="OrderUID"/>
+                                        <field name="CustInternalNumber"/>
+                                        <field name="OrigCompany"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_legere_order" model="ir.actions.act_window">
+            <field name="name">Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">legere.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="root_menu_legere_data" name="Legere Data" parent="sale.sale_menu_root" sequence="35" groups="account.group_account_invoice,sales_team.group_sale_salesman"/>
+        <menuitem name="Orders" id="menu_legere_order" parent="root_menu_legere_data"
+              action="action_legere_order" sequence="1" groups="sales_team.group_sale_salesman"/>
+    </data>
+</odoo>

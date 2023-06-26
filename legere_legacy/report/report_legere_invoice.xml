@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_legere_invoice_document">
+            <t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context(lang=lang)" />
+                <div class="mt-5">
+                    <div class="page">
+                        <h2>
+                            <span t-field="o.InvoiceNumber"/>
+                        </h2>
+
+                        <div id="informations" class="row mt-4 mb-4">
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.DateInvoiced" name="invoice_date">
+                                <strong>Invoice Date:</strong>
+                                <p class="m-0" t-field="o.DateInvoiced"/>
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.DueDate" name="due_date">
+                                <strong>Due Date:</strong>
+                                <p class="m-0" t-field="o.DueDate"/>
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.OrderNumber" name="origin">
+                                <strong>Order Number:</strong>
+                                <p class="m-0" t-field="o.OrderNumber"/>
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2" t-if="o.CustomerNumber" name="customer_code">
+                                <strong>Customer Code:</strong>
+                                <p class="m-0" t-field="o.CustomerNumber"/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm o_main_table table-borderless" name="invoice_line_table">
+                            <thead>
+                                <tr>
+                                    <th class="text-start"><span>Product</span></th>
+                                    <th class="text-start"><span>Description</span></th>
+                                    <th class="text-start"><span>Size</span></th>
+                                    <th class="text-end"><span>Price</span></th>
+                                    <th class="text-end"><span>Qty Ordered</span></th>
+                                    <th class="text-end"><span>Total</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="invoice_tbody">
+                                <t t-foreach="o.InvoiceParts" t-as="line">
+                                    <tr>
+                                        <td>
+                                            <span t-field="line.ProductNumber"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.ProductDescription" t-options="{'widget': 'text'}"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.Size"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="line.UnitPrice"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="line.QtyOrdered"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="line.Total"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="clearfix mb-4">
+                            <div id="total" class="row">
+                                <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ms-auto">
+                                    <table class="table table-sm table-borderless" style="page-break-inside: avoid;">
+                                        <tr class="border-black o_total">
+                                            <td><strong>Total</strong></td>
+                                            <td class="text-end">
+                                                <span t-esc="o.InvoiceGrandTotal"/>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-black o_total">
+                                            <td><strong>Amount Paid</strong></td>
+                                            <td class="text-end">
+                                                <span t-esc="o.PaidAmt"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div t-if="o.Notes" name="comment">
+                            <span t-field="o.Notes"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="report_legere_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="en_US"/>
+                    <t t-call="legere_legacy.report_legere_invoice_document" t-lang="lang"/>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

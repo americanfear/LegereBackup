@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_legere_order_user,access_legere_order_user,model_legere_order,base.group_user,1,1,1,1
+access_legere_order_part_user,access_legere_order_part_user,model_legere_order_part,base.group_user,1,1,1,1
+access_legere_invoice_user,access_legere_invoice_user,model_legere_invoice,base.group_user,1,1,1,1
+access_legere_invoice_part_user,access_legere_invoice_part_user,model_legere_invoice_part,base.group_user,1,1,1,1

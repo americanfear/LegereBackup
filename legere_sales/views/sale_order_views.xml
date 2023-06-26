@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_order_form">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                <div class="oe_button_box" name="button_box" position="after">
+                    <div class="row mt16 o_settings_container" attrs="{'invisible': [('license_expired', '=', False)]}">
+                        <p class="alert alert-warning"> Selected license is expired.</p>
+                    </div>
+                </div>
+                <field name="partner_shipping_id" position="after">
+                    <field name="license_partner_id" attrs="{'invisible': [('license_required', '=', False)], 'required': [('license_required', '!=', False)]}"/>
+                    <field name="license_required" invisible="1"/>
+                    <field name="license_expired" invisible="1"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>
