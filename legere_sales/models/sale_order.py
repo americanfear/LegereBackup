@@ -20,3 +20,27 @@ class SaleOrder(models.Model):
     license_partner_id = fields.Many2one('res.partner', string='License Partner', domain="[('id', 'child_of', partner_id), ('licensed', '!=', False)]")
     license_required = fields.Boolean(string='License Required', compute='_compute_license_required', store=True)
     license_expired = fields.Boolean(string='License Expired', compute='_compute_license_expired')
+
+    def action_confirm_check(self):
+        for record in self:
+            if record.license_partner_id and record.license_expired and not self.env.context.get('skip_license_expired_check'):
+                return record.raise_warning(warning_type='license_expired')
+            record.action_confirm()                        
+             
+    
+    def raise_warning(self, warning_type=None):
+        view = self.env.ref('legere_sales.view_sale_order_check_confirm_fingerprint_wizard')
+        wiz = self.env['sale.order.check.confirm.wizard'].create({'sale_order_id': self.id,
+            'warning_type': warning_type})
+        return {
+            'name': _('Check Warning'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.order.check.confirm.wizard',
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
+            'target': 'new',
+            'res_id': wiz.id,
+            'context': self.env.context,
+        }
