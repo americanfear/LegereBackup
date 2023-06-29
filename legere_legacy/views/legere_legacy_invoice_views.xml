@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="legere_invoice_tree" model="ir.ui.view">
+            <field name="name">legere.invoice.tree</field>
+            <field name="model">legere.invoice</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="InvoiceNumber"/>
+                    <field name="CustomerNumber"/>
+                    <field name="InvoiceType"/>
+                    <field name="OrderNumber"/>
+                    <field name="DateInvoiced"/>
+                    <field name="DueDate"/>
+                    <field name="Subtotal"/>
+                    <field name="InvoiceGrandTotal"/>
+                    <field name="PaidAmt"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="legere_invoice_form" model="ir.ui.view">
+            <field name="name">legere.invoice.form</field>
+            <field name="model">legere.invoice</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field name="InvoiceNumber"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="CustomerNumber"/>
+                                <field name="InvoiceType"/>
+                                <field name="OrderNumber"/>
+                                <field name="DateInvoiced"/>
+                                <field name="DueDate"/>
+                                <field name="InvCommitted"/>
+                                <field name="CommittedDateTime"/>
+                            </group>
+                            <group>
+                                <field name="Shipping"/>
+                                <field name="CODCharge"/>
+                                <field name="Subtotal"/>
+                                <field name="HandlingCharge"/>
+                                <field name="Miscellaneous"/>
+                                <field name="AddBalanceToCOD"/>
+                                <field name="CODTotal"/>
+                                <field name="InvoiceOriginalAmt"/>
+                                <field name="InvoiceGrandTotal"/>
+                                <field name="PaidInFull"/>
+                                <field name="PaidAmt"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string='Parts'>
+                                <field name="InvoiceParts">
+                                    <tree>
+                                        <field name="ProductNumber"/>
+                                        <field name="ProductDescription"/>
+                                        <field name="Size"/>
+                                        <field name="LotNumber"/>
+                                        <field name="UnitPrice"/>
+                                        <field name="InvoiceUnitCost"/>
+                                        <field name="QtyOrdered"/>
+                                        <field name="QtyShipped"/>
+                                        <field name="QtyBO"/>
+                                        <field name="Total"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="ProductNumber"/>
+                                                <field name="ProductDescription"/>
+                                                <field name="Size"/>
+                                                <field name="LotNumber"/>
+                                                <field name="UnitPrice"/>
+                                                <field name="InvoiceUnitCost"/>
+                                                <field name="QtyOrdered"/>
+                                                <field name="QtyShipped"/>
+                                                <field name="QtyBO"/>
+                                                <field name="Total"/>
+                                            </group>
+                                            <group>
+                                                <field name="InvoiceNumber"/>
+                                                <field name="Description"/>
+                                                <field name="PrivateLabel"/>
+                                                <field name="Sample"/>
+                                                <field name="PriceBreak"/>
+                                                <field name="NewProduct"/>
+                                                <field name="PriceChanged"/>
+                                                <field name="SalespersonId"/>
+                                                <field name="Territory"/>
+                                                <field name="CommissionCode"/>
+                                                <field name="CustInternalNumber"/>
+                                                <field name="ItemLineNumber"/>
+                                                <field name="UniqueId"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                                <field name="Notes" placeholder="Notes...." nolabel="1"/>
+                            </page>
+                            <page string='Other Information'>
+                                <group>
+                                    <group>
+                                        <field name="UniqueId"/>
+                                        <field name="CustInternalNumber"/>
+                                        <field name="DiscDays"/>
+                                        <field name="DiscountDate"/>
+                                    </group>
+                                    <group>
+                                        <field name="ShipDate"/>
+                                        <field name="ShipMethod"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_legere_invoice" model="ir.actions.act_window">
+            <field name="name">Invoices</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">legere.invoice</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem name="Invoices" id="menu_legere_invoice" parent="root_menu_legere_data"
+              action="action_legere_invoice" sequence="2" groups="account.group_account_invoice"/>
+
+    </data>
+</odoo>

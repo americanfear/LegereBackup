@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_partner_form">
+            <field name="name">partner.view.buttons</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+                <field name="industry_id" position="after">
+                    <field name="legere_customer_ID"/>
+                </field>
+                <div name="button_box" position="inside">
+                    <button type="object" class="oe_stat_button" icon="fa-usd" name="action_view_partner_legere_orders"
+                        groups="sales_team.group_sale_salesman">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="total_legere_ordered" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            </span>
+                            <span class="o_stat_text">Legere Ordered</span>
+                        </div>
+                    </button>
+                    
+                    <button type="object" class="oe_stat_button" icon="fa-pencil-square-o" name="action_view_partner_legere_invoices"
+                        groups="account.group_account_invoice">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="total_legere_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            </span>
+                            <span class="o_stat_text">Legere Invoiced</span>
+                        </div>
+                    </button>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>
