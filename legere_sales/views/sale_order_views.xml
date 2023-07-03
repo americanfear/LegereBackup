@@ -16,6 +16,23 @@
                     <field name="license_required" invisible="1"/>
                     <field name="license_expired" invisible="1"/>
                 </field>
+
+                <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                    <attribute name='invisible'>1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm'][1]" position="after">
+                    <button name="action_confirm_check" id="action_confirm_check_primary"
+                        string="Check and Confirm" class="btn-primary" type="object"
+                        attrs="{'invisible': [('state', 'not in', ['sent'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                    <attribute name='invisible'>1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm'][2]" position="after">
+                    <button name="action_confirm_check" id="action_confirm_check_secondary"
+                        string="Check and Confirm" type="object"
+                        attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                </xpath>
             </field>
         </record>
     </data>

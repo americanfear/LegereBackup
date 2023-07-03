@@ -5,4 +5,5 @@ class ResPartner(models.Model):
 
     licensed = fields.Boolean(string='Is Licensed')
     license_number = fields.Char(string='License Number')
+    NPI_number = fields.Char(string='NPI Number')
     license_expiration_date = fields.Date(string='License Expiration Date')
