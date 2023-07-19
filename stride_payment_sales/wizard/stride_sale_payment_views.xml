@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stride_sale_payment_form" model="ir.ui.view">
+            <field name="name">stride.sale.payment.form</field>
+            <field name="model">stride.sale.payment</field>
+            <field name="arch" type="xml">
+                <form js_class="stride_sales_payments_popup">
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="partner_email"/>
+                            <field name="reference" widget="char"/>
+                            <field name="amount" widget='monetary' attrs="{'invisible': [('auto_invoice', '!=', False)]}"/>
+                            <field name="order_confirm"/>
+                            <field name="create_downpayment"/>
+                            <field name="auto_invoice"/>
+                            <field name="send_receipt"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="email" invisible="1"/>
+                            <field name="sale_order_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="payment_method"/>
+                            <field name="provider_id"/>
+                            <field name="payment_token_id" attrs="{'invisible': [('payment_method', '!=', 'token')], 'required': [('payment_method', '=', 'token')]}"/>
+                            <field name="provider_code" invisible="1"/>
+                            <field name="provider_state" invisible="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Pay" name="action_register_sale_payment" type="object" class="oe_highlight" data-hotkey="q"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="stride_sale_payment_action" model="ir.actions.act_window">
+            <field name="name">Stride Sale Payment</field>
+            <field name="res_model">stride.sale.payment</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stride_sale_payment_form" model="ir.ui.view">
+            <field name="name">stride.sale.payment.form</field>
+            <field name="model">stride.sale.payment</field>
+            <field name="inherit_id" ref="stride_payment_sales.stride_sale_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr='//field[@name="payment_token_id"]' position='after'>
+                    <field name="authorize_card_number" attrs="{'invisible': ['|', ('payment_method', '!=', 'card'), ('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'card'),('provider_code', '=', 'authorize')]}" placeholder="Card Number"/>
+                    <field name="authorize_card_expiry_month" attrs="{'invisible': ['|', ('payment_method', '!=', 'card'), ('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'card'),('provider_code', '=', 'authorize')]}" placeholder="MM"/>
+                    <field name="authorize_card_expiry_year" attrs="{'invisible': ['|', ('payment_method', '!=', 'card'), ('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'card'),('provider_code', '=', 'authorize')]}" placeholder="YY"/>
+                    <field name="authorize_card_cvc" attrs="{'invisible': ['|', ('payment_method', '!=', 'card'),('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'card'),('provider_code', '=', 'authorize')]}" placeholder="CVC"/>
+                    <field name="authorize_name_on_account" attrs="{'invisible': ['|', ('payment_method', '!=', 'bank'), ('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'bank'),('provider_code', '=', 'authorize')]}"/>
+                    <field name="authorize_account_number" attrs="{'invisible': ['|', ('payment_method', '!=', 'bank'), ('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'bank'),('provider_code', '=', 'authorize')]}"/>
+                    <field name="authorize_aba_number" attrs="{'invisible': ['|', ('payment_method', '!=', 'bank'), ('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'bank'),('provider_code', '=', 'authorize')]}"/>
+                    <field name="authorize_account_type" attrs="{'invisible': ['|', ('payment_method', '!=', 'bank'),('provider_code', '!=', 'authorize')], 'required': [('payment_method', '=', 'bank'),('provider_code', '=', 'authorize')]}"/>
+                    <field name="authorize_login" invisible="1"/>
+                    <field name="authorize_client_key" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
