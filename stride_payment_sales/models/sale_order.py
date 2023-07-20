@@ -22,7 +22,6 @@ class SaleOrder(models.Model):
 
     def action_stride_sale_payment(self):
         form = self.env.ref('stride_payment_sales.stride_sale_payment_form', raise_if_not_found=True)
-        self._cr.execute('delete from stride_sale_payment_line')
         self._cr.execute('delete from stride_sale_payment')
         wiz = self.env['stride.sale.payment'].create({
             'sale_order_id': self.id,
