@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Manufacturing Order -->
+        <record id="mrp_production_form_view" model="ir.ui.view">
+            <field name="name">mrp.production.form</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr='//field[@name="user_id"]' position='after'>
+                    <field name="legere_customer_ID"/>
+                    <field name="legere_customer_name"/>
+                </xpath>
+                <xpath expr='//button[@name="button_mark_done"]' position='before'>
+                    <button name="action_set_progress" attrs="{'invisible': [('state', '!=', 'confirmed')]}" string="Set Inprogress" type="object" class="oe_highlight"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

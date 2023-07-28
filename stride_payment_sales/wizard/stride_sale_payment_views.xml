@@ -31,7 +31,7 @@
                     </group>
                     <footer>
                         <button string="Pay" name="action_register_sale_payment" type="object" class="oe_highlight" data-hotkey="q"/>
-                        <button string="Cancel" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                        <button string="Discard" name="action_cancel_sale_payment" type="object" class="btn btn-secondary" data-hotkey="z"/>
                     </footer>
                 </form>
             </field>

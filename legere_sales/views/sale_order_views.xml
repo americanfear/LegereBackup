@@ -17,6 +17,10 @@
                     <field name="license_expired" invisible="1"/>
                 </field>
 
+                <field name="payment_term_id" position="after">
+                    <field name="customer_current_limit"/>
+                </field>
+
                 <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
                     <attribute name='invisible'>1</attribute>
                 </xpath>
@@ -32,6 +36,9 @@
                     <button name="action_confirm_check" id="action_confirm_check_secondary"
                         string="Check and Confirm" type="object"
                         attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="domain">[('is_company', '=', True)]</attribute>
                 </xpath>
             </field>
         </record>

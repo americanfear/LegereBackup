@@ -7,6 +7,7 @@
             <field name="inherit_id" ref="base.view_partner_form" />
             <field name="arch" type="xml">
                 <field name="vat" position="after">
+                    <field name="olympia_login"/>
                     <field name="licensed"/>
                     <field name="license_number" attrs="{'invisible': [('licensed', '=', False)], 'required': [('licensed', '!=', False)]}"/>
                     <field name="license_expiration_date" attrs="{'invisible': [('licensed', '=', False)], 'required': [('licensed', '!=', False)]}"/>
