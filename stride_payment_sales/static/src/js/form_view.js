@@ -21,6 +21,9 @@ odoo.define('stride_payment_sales.FormView', function (require) {
 
     var StridePaymentSalesFormController = FormController.extend({
         async _onButtonClicked(event){
+            if (event.data.attrs.name === 'action_cancel_sale_payment'){
+                window.location.reload();
+            }
             if (event.data.attrs.name === 'action_register_sale_payment'){
                 var self = this;
                 if (event.data.record.data.provider_id == false) {
@@ -53,9 +56,7 @@ odoo.define('stride_payment_sales.FormView', function (require) {
                     return false;
                 }
 
-                if (event.data.record.data.provider_code == 'authorize') {
-                    await self.processSalePaymentauthorize(event);    
-                }
+                await self['processSalePayment' + event.data.record.data.provider_code](event);
             }
         },
     });

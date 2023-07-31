@@ -1,9 +1,11 @@
 {
-    'name': 'Stride: Payment Sales',
+    'name': 'Legere Sales Commission',
     'version': '1.0',
-    'category': 'Sales/Payment',
-    'summary': """Stride Payment""",
-    'description': """Stride Payment""",
+    'category': 'Sales/Sales',
+    'summary': """calculating sales person commission""",
+    'description': """
+        calculating sales person commission
+    """,
     'license': 'Other proprietary',
     'author': "Dream Mountain Services",
     'website': "https://DreamMtn.Services",
@@ -12,14 +14,12 @@
     'depends': ['sale_management'],
     'data': [
         'security/ir.model.access.csv',
-        'wizard/stride_sale_payment_views.xml',
+        'security/security_rule.xml',
+        'data/cron.xml',
+        'views/commission_views.xml',
         'views/sale_order_views.xml',
+        'views/account_move_views.xml'
     ],
-    'assets': {
-        'web.assets_backend': [
-            'stride_payment_sales/static/src/js/form_view.js',
-        ],
-    },
     'application': True,
     'installable': True,
     'auto_install': False,

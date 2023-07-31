@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="customer_ID" attrs="{'invisible': [('partner_id', '=', False)]}"/>
+                    <field name="olympia_login" attrs="{'invisible': [('partner_id', '=', False)]}"/>
                 </field>
             </field>
         </record>

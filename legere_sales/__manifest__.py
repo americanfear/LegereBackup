@@ -1,10 +1,10 @@
 {
     'name': 'Legere Sales',
-    'version': '1.0.1',
+    'version': '1.0',
     'category': 'Sales/Sales',
-    'summary': """Legere Sales""",
+    'summary': """customization related to sales module""",
     'description': """
-        Legere Sales
+        customization related to sales module
     """,
     'license': 'Other proprietary',
     'author': "Dream Mountain Services",

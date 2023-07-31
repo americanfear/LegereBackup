@@ -45,6 +45,7 @@ class StrideSalePayment(models.Model):
     create_downpayment = fields.Boolean(string='Create Down Payment Invoice', default=False)
     auto_invoice = fields.Boolean(string='Create Final Invoice', default=False)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order', required=True)
+    authorize_name_on_account = fields.Char(string='Name On Account')
 
     @api.onchange('auto_invoice')
     def onchange_auto_invoice(self):
@@ -66,6 +67,9 @@ class StrideSalePayment(models.Model):
             self.auto_invoice = False
 
     def action_register_sale_payment(self):
+        return True
+
+    def action_cancel_sale_payment(self):
         return True
 
     def action_send_receipt(self, payment_id):
@@ -135,7 +139,7 @@ class StrideSalePayment(models.Model):
         payment_provider_id = self.env['payment.provider'].browse(provider_id)
         partner_id = self.env['res.partner'].browse(partner_id)
 
-        payment_method_line_id = payment_provider_id.journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.payment_method_id.name == 'Authorize.Net')
+        payment_method_line_id = payment_provider_id.journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.payment_method_id.code == payment_provider_id.code)
         return self.env['account.payment'].create({
             'amount': amount,
             'company_id': company_id,

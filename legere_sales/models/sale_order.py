@@ -17,9 +17,15 @@ class SaleOrder(models.Model):
         for record in self:
             record.license_expired = True if record.license_partner_id and record.license_partner_id.license_expiration_date < fields.Date.today() else False
 
+    @api.depends('partner_id')
+    def _compute_customer_current_limit(self):
+        for record in self:
+            record.customer_current_limit = record.partner_id.credit
+
     license_partner_id = fields.Many2one('res.partner', string='License Partner', domain="[('id', 'child_of', partner_id), ('licensed', '!=', False)]")
     license_required = fields.Boolean(string='License Required', compute='_compute_license_required', store=True)
     license_expired = fields.Boolean(string='License Expired', compute='_compute_license_expired')
+    customer_current_limit = fields.Monetary(string='Customer Current Limit', compute='_compute_customer_current_limit')
 
     def action_confirm_check(self):
         for record in self:
