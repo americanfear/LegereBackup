@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_stride_sale_payment,access.stride.sale.payment,stride_payment_sales.model_stride_sale_payment,,1,1,1,1
+access_payment_provider_user,access.payment.provider.user,payment.model_payment_provider,base.group_user,1,0,0,0

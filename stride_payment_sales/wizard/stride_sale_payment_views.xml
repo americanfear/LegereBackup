@@ -24,12 +24,13 @@
                         <group>
                             <field name="payment_method"/>
                             <field name="provider_id"/>
+                            <field name="capture_token" attrs="{'invisible': [('payment_method', '=', 'token')]}"/>
                             <field name="payment_token_id" attrs="{'invisible': [('payment_method', '!=', 'token')], 'required': [('payment_method', '=', 'token')]}"/>
                             <field name="provider_code" invisible="1"/>
                             <field name="provider_state" invisible="1"/>
                         </group>
                     </group>
-                    <footer>
+                    <footer id="stride_sale_payment_footer">
                         <button string="Pay" name="action_register_sale_payment" type="object" class="oe_highlight" data-hotkey="q"/>
                         <button string="Discard" name="action_cancel_sale_payment" type="object" class="btn btn-secondary" data-hotkey="z"/>
                     </footer>
