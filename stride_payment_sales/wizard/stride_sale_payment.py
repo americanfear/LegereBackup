@@ -46,6 +46,7 @@ class StrideSalePayment(models.Model):
     auto_invoice = fields.Boolean(string='Create Final Invoice', default=False)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order', required=True)
     authorize_name_on_account = fields.Char(string='Name On Account')
+    capture_token = fields.Boolean(string='Save payment details', default=True)
 
     @api.onchange('auto_invoice')
     def onchange_auto_invoice(self):
@@ -82,14 +83,14 @@ class StrideSalePayment(models.Model):
         if order_confirm and sale_order.state in ['draft', 'sent']:
             sale_order.action_confirm()
         if create_downpayment and sale_order.state in ['sale']:
-            sale_advance_payment = self.env['sale.advance.payment.inv'].create({
+            sale_advance_payment = self.env['sale.advance.payment.inv'].sudo().create({
                 'advance_payment_method': 'fixed',
                 'sale_order_ids': [(6,0, [sale_order.id])],
                 'fixed_amount': amount
             })
             return sale_advance_payment._create_invoices(sale_order)
         if auto_invoice and sale_order.state in ['sale']:
-            sale_advance_payment = self.env['sale.advance.payment.inv'].create({
+            sale_advance_payment = self.env['sale.advance.payment.inv'].sudo().create({
                 'advance_payment_method': 'delivered',
                 'sale_order_ids': [(6,0, [sale_order.id])],
                 'deduct_down_payments': True
@@ -100,20 +101,26 @@ class StrideSalePayment(models.Model):
     def process_token_payment(self, order_id, partner_id, amount, reference, payment_token_id, provider_id, company_id, currency_id, send_receipt, order_confirm, create_downpayment, auto_invoice):
         invoice = self.env['stride.sale.payment'].pre_processing(order_id=order_id, order_confirm=order_confirm, create_downpayment=create_downpayment, auto_invoice=auto_invoice, amount=amount)
         if invoice:
-            invoice.action_post()
+            try:
+                invoice.action_post()
+            except Exception as e:
+                invoice.sudo().action_post()
         payment_provider_id = self.env['payment.provider'].browse(provider_id)
         if hasattr(self.env['stride.sale.payment'], '%s_process_token_payment' % payment_provider_id.code):
             getattr(self.env['stride.sale.payment'], '%s_process_token_payment' % payment_provider_id.code)(order_id=order_id, partner_id=partner_id, amount=amount, reference=reference, payment_token_id=payment_token_id, provider_id=provider_id, company_id=company_id, currency_id=currency_id, send_receipt=send_receipt, invoice=invoice)
 
-    def process_card_payment(self, response, order_id, partner_id, amount, reference, provider_id, company_id, currency_id, send_receipt, order_confirm, create_downpayment, auto_invoice):
+    def process_card_payment(self, response, order_id, partner_id, amount, reference, provider_id, company_id, currency_id, send_receipt, order_confirm, create_downpayment, auto_invoice, capture_token):
         invoice = self.env['stride.sale.payment'].pre_processing(order_id=order_id, order_confirm=order_confirm, create_downpayment=create_downpayment, auto_invoice=auto_invoice, amount=amount)
         if invoice:
-            invoice.action_post()
+            try:
+                invoice.action_post()
+            except Exception as e:
+                invoice.sudo().action_post()
         payment_provider_id = self.env['payment.provider'].browse(provider_id)
         if hasattr(self.env['stride.sale.payment'], '%s_process_card_payment' % payment_provider_id.code):
-            getattr(self.env['stride.sale.payment'], '%s_process_card_payment' % payment_provider_id.code)(response=response, order_id=order_id, partner_id=partner_id, amount=amount, reference=reference, provider_id=provider_id, company_id=company_id, currency_id=currency_id, send_receipt=send_receipt, invoice=invoice)
+            getattr(self.env['stride.sale.payment'], '%s_process_card_payment' % payment_provider_id.code)(response=response, order_id=order_id, partner_id=partner_id, amount=amount, reference=reference, provider_id=provider_id, company_id=company_id, currency_id=currency_id, send_receipt=send_receipt, capture_token=capture_token, invoice=invoice)
     
-    def create_payment_transaction(self, order_id, partner_id, amount, reference, payment_token_id, provider_id, company_id, currency_id, invoice):
+    def create_payment_transaction(self, order_id, partner_id, amount, reference, payment_token_id, provider_id, company_id, currency_id, invoice, capture_token=None):
         payment_provider_id = self.env['payment.provider'].browse(provider_id)
         partner_id = self.env['res.partner'].browse(partner_id)
         sale_order = self.env['sale.order'].browse(order_id)
@@ -122,7 +129,7 @@ class StrideSalePayment(models.Model):
             prefix=reference
         )
 
-        return self.env['payment.transaction'].create({
+        return self.env['payment.transaction'].sudo().create({
             'provider_id': payment_provider_id.id,
             'amount': amount,
             'company_id': company_id,
@@ -133,6 +140,7 @@ class StrideSalePayment(models.Model):
             'token_id': payment_token_id,
             'reference': reference,
             'operation': 'online_direct',
+            'tokenize': True if capture_token else False,
         })
 
     def create_account_payment(self, partner_id, amount, reference, payment_token_id, provider_id, company_id, currency_id, payment_transaction_id):
@@ -140,7 +148,7 @@ class StrideSalePayment(models.Model):
         partner_id = self.env['res.partner'].browse(partner_id)
 
         payment_method_line_id = payment_provider_id.journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.payment_method_id.code == payment_provider_id.code)
-        return self.env['account.payment'].create({
+        return self.env['account.payment'].sudo().create({
             'amount': amount,
             'company_id': company_id,
             'currency_id': currency_id,

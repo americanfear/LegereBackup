@@ -13,16 +13,19 @@ class SaleOrder(models.Model):
     def _action_confirm(self):
         res = super(SaleOrder, self)._action_confirm()
         project_task_pool = self.env['project.task'].sudo()
+        projects = []
         for record in self:
             for line in record.order_line.filtered(lambda x: x.product_id and x.product_id.is_custom):
                 if not line.product_id.custom_project_id:
                     raise ValidationError(_('Please Select Default Custom Service Project On Product: %s.', line.product_id.name))
-
-                project_task_pool.create({
-                    'name': f"""{record.name} - {record.client_order_ref or ""}""",
-                    'project_id': line.product_id.custom_project_id.id,
-                    'sale_order_id': record.id,
-                    'is_work_preparation': True,
-                    'partner_id': record.partner_id.id,
-                })
+                
+                if not line.product_id.group_task or line.product_id.custom_project_id.name not in projects:
+                    project_task_pool.create({
+                        'name': f"""{record.name} - {record.client_order_ref or ""}""",
+                        'project_id': line.product_id.custom_project_id.id,
+                        'sale_order_id': record.id,
+                        'is_work_preparation': True,
+                        'partner_id': record.partner_id.id,
+                    })
+                    projects.append(line.product_id.custom_project_id.name)
         return res

@@ -77,10 +77,10 @@ class StrideSalePayment(models.Model):
         except Exception as e:
             raise AccessError(_('%s.' %(str(e))))
 
-    def authorize_process_card_payment(self, response, order_id, partner_id, amount, reference, provider_id, company_id, currency_id, send_receipt, invoice):
+    def authorize_process_card_payment(self, response, order_id, partner_id, amount, reference, provider_id, company_id, currency_id, send_receipt, capture_token, invoice):
         try:
             stride_sale_payment_pool = self.env['stride.sale.payment']
-            tx = stride_sale_payment_pool.create_payment_transaction(order_id=order_id, partner_id=partner_id, amount=amount, reference=reference, payment_token_id=False, provider_id=provider_id, company_id=company_id, currency_id=currency_id, invoice=invoice)
+            tx = stride_sale_payment_pool.create_payment_transaction(order_id=order_id, partner_id=partner_id, amount=amount, reference=reference, payment_token_id=False, provider_id=provider_id, company_id=company_id, currency_id=currency_id, invoice=invoice, capture_token=capture_token)
             payment_provider_id = self.env['payment.provider'].browse(provider_id)
 
             #Process Payment

@@ -69,6 +69,7 @@ odoo.define('stride_payment_sales_authorize.FormView', function (require) {
                         event.data.record.data.order_confirm,
                         event.data.record.data.create_downpayment,
                         event.data.record.data.auto_invoice,
+                        event.data.record.data.capture_token,
                     ]
                 }).then(function(data) {
                     window.location.reload();
