@@ -1,0 +1,6 @@
+    easypost==7.9.0
+    # twilio==7.16.1
+    # plaid-python==14.0.0
+    # boto3==1.26.55
+    # geoip2==4.7.0
+    
