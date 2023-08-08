@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="choose_delivery_carrier_view_form" model="ir.ui.view">
+        <field name="name">choose.delivery.carrier.form</field>
+        <field name="model">choose.delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.choose_delivery_carrier_view_form"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//group//group" position="inside">
+        		<field name="no_of_packages" readonly="1" attrs="{'invisible': [('no_of_packages','=', 0)]}"/>
+        	</xpath>
+        </field>
+    </record>
+</odoo>

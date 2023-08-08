@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="sms_template_easypost_shipment_out_for_delivery" model="sms.template">
+            <field name="name">Easypost Shipment: Out for Delivery</field>
+            <field name="model_id" ref="stride_delivery.model_easypost_shipment"/>
+            <field name="body">
+                {{ (object.picking_id.company_id.name + ': We are glad to inform you that your Shipment ' + object.name + ' is  Out for Delivery for Order ' + object.picking_id.sale_id.name + '.' if object.picking_id.sale_id else object.picking_id.company_id.name + ': We are glad to inform you that your Shipment ' + object.name + ' is  Out for Delivery.') }}
+            </field>
+        </record>
+
+        <record id="sms_template_easypost_shipment_delivered" model="sms.template">
+            <field name="name">Easypost Shipment: Delivered</field>
+            <field name="model_id" ref="stride_delivery.model_easypost_shipment"/>
+            <field name="body">
+                {{ (object.picking_id.company_id.name + ': We are glad to inform you that your Shipment ' + object.name + ' has been shipped for Order ' + object.picking_id.sale_id.name + '.' if object.picking_id.sale_id else object.picking_id.company_id.name + ': We are glad to inform you that your Shipment ' + object.name + ' has been shipped.') }}
+            </field>
+        </record>
+    </data>
+</odoo>

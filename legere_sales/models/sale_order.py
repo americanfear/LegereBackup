@@ -1,5 +1,22 @@
 from odoo import api, fields, models, _
 
+class SaleAdvancePaymentInv(models.TransientModel):
+    _inherit = 'sale.advance.payment.inv'
+
+    def legere_create_invoices(self):
+        self.ensure_one()
+        if self.advance_payment_method == 'delivered':
+            invoice = self.sale_order_ids._create_invoices(final=self.deduct_down_payments)
+            return invoice.id
+
+class AccountPaymentRegister(models.TransientModel):
+    _inherit = 'account.payment.register'
+
+    def legere_create_payments(self):
+        self.ensure_one()
+        payment = self._create_payments()
+        return payment.id
+
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 

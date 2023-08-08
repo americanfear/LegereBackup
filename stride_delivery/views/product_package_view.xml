@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="stock_package_type_form_delivery">
+        <field name="name">stock.package.type.form.delivery</field>
+        <field name="model">stock.package.type</field>
+        <field name="inherit_id" ref="delivery.stock_package_type_form_delivery" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='barcode']" position="after">
+                <field name="customs_package" widget="boolean_toggle"/>
+            </xpath>
+            <xpath expr="//field[@name='shipper_package_code']" position="before">
+                <field name="easypost_carrier_type"
+                        attrs="{'invisible': [('package_carrier_type', '!=', 'easypost')]}"/>
+                <field name="predefine_package_id" domain="[('easypost_carrier_type.id','=',easypost_carrier_type)]"
+                       attrs="{'invisible': [('easypost_carrier_type', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_carrier_predefine_package_form" model="ir.ui.view">
+        <field name="name">carrier.predefine.package.form</field>
+        <field name="model">carrier.predefine.package</field>
+        <field name="arch" type="xml">
+            <form string="Predefine Package">
+                <field name="name"/>
+                <field name="easypost_carrier_type"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_carrier_predefine_package_tree" model="ir.ui.view">
+        <field name="name">carrier.predefine.package.tree</field>
+        <field name="model">carrier.predefine.package</field>
+        <field name="arch" type="xml">
+            <tree string="Predefine Package">
+                <field name="name"/>
+                <field name="easypost_carrier_type"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

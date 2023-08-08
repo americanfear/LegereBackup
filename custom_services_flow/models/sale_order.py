@@ -19,9 +19,18 @@ class SaleOrder(models.Model):
                 if not line.product_id.custom_project_id:
                     raise ValidationError(_('Please Select Default Custom Service Project On Product: %s.', line.product_id.name))
                 
+                task_name = record.name
+                if record.client_order_ref:
+                    task_name += ' - ' + record.client_order_ref
+                multiple = record.order_line.filtered(lambda x: x.product_id.group_task and x.product_id.custom_project_id.id == line.product_id.custom_project_id.id and x.id != line.id)
+                if multiple and line.product_id.group_task:
+                    task_name += ' - Multiple Products'
+                else:
+                    task_name += ' - ' + line.product_id.name
+                
                 if not line.product_id.group_task or line.product_id.custom_project_id.name not in projects:
                     project_task_pool.create({
-                        'name': f"""{record.name} - {record.client_order_ref or ""}""",
+                        'name': task_name,
                         'project_id': line.product_id.custom_project_id.id,
                         'sale_order_id': record.id,
                         'is_work_preparation': True,

@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="project.view_task_form2" />
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="customer_ID" attrs="{'invisible': [('partner_id', '=', False)]}"/>
+                    <field name="customer_ID" attrs="{'invisible': [('partner_id', '=', False)]}" widget="char"/>
                     <field name="olympia_login" attrs="{'invisible': [('partner_id', '=', False)]}"/>
                 </field>
             </field>
@@ -19,7 +19,7 @@
             <field name="inherit_id" ref="project.view_task_tree2" />
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="customer_ID" optional="hide"/>
+                    <field name="customer_ID" optional="hide" widget="char"/>
                 </field>
             </field>
         </record>
