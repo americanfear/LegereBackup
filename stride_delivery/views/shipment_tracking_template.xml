@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="easypost_shipment_tracking_template" name="Shipment Tracking">
+            <t t-call="website.layout">
+                <div id="wrap" class="gift_selection_page">
+                    <div class="oe_structure">
+                        <section class="mt64 justify-content-center">
+                            <div class="row">
+                                <div class="col-10 col-md-8 col-lg-6 mx-auto">
+                                    <div class="tracker-progress-bar tracker-progress-bar-with-dots">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" style="width: 100%;">
+                                            </div>
+                                        </div>
+                                        <div class="success mt8">
+                                            <span class="dot state-0"></span>
+                                            <span t-att-class="'state-label state-0 %s' % ('current-state' if shipment.tracking_status == 'pre_transit' else 'past-state')">
+                                            Pre-Transit
+                                            </span>
+                                            
+                                            <span class="dot state-1"></span>
+                                            <span t-att-class="'state-label state-1 %s' % ('current-state' if shipment.tracking_status == 'in_transit' else 'past-state')">
+                                            In Transit
+                                            </span>
+                                            
+                                            <span class="dot state-2"></span>
+                                            <span t-att-class="'state-label state-2 %s' % ('current-state' if shipment.tracking_status == 'out_for_delivery' else 'past-state')">
+                                            Out for Delivery
+                                            </span>
+                                            <span class="dot state-3"></span>
+                                            <span t-att-class="'state-label state-3 %s' % ('current-state' if shipment.tracking_status == 'delivered' else 'past-state')">
+                                            Delivered
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="mb64 justify-content-center">
+                            <div class="container">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6 text-center">
+                                        <t t-if="last_tracking_id and shipment.tracking_status == 'delivered'">
+                                            <div class="text-muted"><span t-field="last_tracking_id.name"/> On</div>
+                                            <div><h3><span t-field="last_tracking_id.tracking_time" t-options="{'format':  'MMMM dd, YYYY hh:mm a'}"/></h3></div>
+                                        </t>
+                                        <t t-if="shipment.est_delivery_date and shipment.tracking_status != 'delivered'">
+                                            <div class="text-muted">Estimated Delivery Date</div>
+                                            <div><h3><span t-field="shipment.est_delivery_date" t-options="{'format':  'EEEE MMMM dd, YYYY'}"/></h3></div>
+                                        </t>
+                                    </div>
+                                    <div class="col-lg-4 align-items-center text-right justify-content-right">
+                                        <t t-if="easypost_carrier_type and easypost_carrier_type.icon">
+                                            <img style="max-width: 300px !important;max-height: 100px !important;" t-attf-src="data:image/png;base64,{{easypost_carrier_type.icon}}"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img src="/stride_delivery/static/src/img/logo2.png" style="max-width: 300px !important;max-height: 100px !important;"/>
+                                        </t>
+                                        <span t-esc="shipment.name" class="tracking-code"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <t t-if="last_tracking_id">
+                            <section class="mb32 justify-content-center">
+                                <div class="container">
+                                    <p class="small text-end"><span class="text-muted">Last Updated:</span> <strong><span t-field="last_tracking_id.tracking_time" t-options="{'format':  'MMMM dd, YYYY hh:mm a'}"/></strong></p>
+                                    <div class="row">
+                                        <div class="col-10 col-md-8 col-lg-8 mx-auto">
+                                        <ul class="tracking-details list-unstyled mb-4 border border-light">
+                                            <t t-foreach="tracking_ids" t-as="tracking">
+                                                <li class="d-flex align-items-center mb-3">
+                                                    <div class="text-gray-300 font-size-h5 text-right tracking-time-div">
+                                                        <span t-field="tracking.tracking_time" t-options="{'format':  'MMMM dd, YYYY hh:mm a'}"/>
+                                                    </div>
+                                                    <div class="tracking-detail-div">
+                                                        <div class="font-size-h5">
+                                                            <strong><span t-esc="tracking.name"/></strong>
+                                                        </div>
+                                                        <div class="text-gray-300">
+                                                            <span t-esc="tracking.tracking_city"/><t t-if="tracking.tracking_state">, <span t-esc="tracking.tracking_state"/></t>
+                                                            <t t-if="tracking.tracking_zip"> <span t-esc="tracking.tracking_zip"/></t>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </t>
+                                        </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </t>
+                        <section class="mb32 justify-content-center">
+                            <div class="container">
+                                <p class="small text-center"><span class="text-muted">powered by</span> <img src="/stride_delivery/static/src/img/logo2.png" style="max-width: 100px !important;max-height: 100px !important;"/></p>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

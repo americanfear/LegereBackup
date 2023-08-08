@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="easypost_shipping_rate_form" model="ir.ui.view">
+            <field name="name">easypost.shipping.rate.form</field>
+            <field name="model">easypost.shipping.rate</field>
+            <field name="arch" type="xml">
+                <form string="Shipping Rates">
+                    <field name="line_ids">
+                        <tree editable="bottom" create="0" edit="0">
+                            <field name="is_selected" widget="boolean_toggle"/>
+                            <field name="carrier"/>
+                            <field name="service"/>
+                            <field name="rate"/>
+                        </tree>
+                    </field>
+                    <footer>
+                        <button string="Apply" name="do_action" type="object" class="oe_highlight"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="easypost_shipping_rate_action" model="ir.actions.act_window">
+            <field name="name">Shipping Rates</field>
+            <field name="res_model">easypost.shipping.rate</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="easypost_carrier_usps" model="easypost.carrier.type">
+			<field name="name">USPS</field>
+			<field name="carrier_type">UspsAccount</field>
+			<field name="icon" type="base64" file="stride_delivery/static/src/img/usps-logo.png"/>
+		</record>
+        <record id="easypost_carrier_ups" model="easypost.carrier.type">
+			<field name="name">UPS</field>
+			<field name="carrier_type">UpsAccount</field>
+			<field name="icon" type="base64" file="stride_delivery/static/src/img/ups-logo.png"/>
+		</record>
+        <record id="easypost_carrier_fedex" model="easypost.carrier.type">
+			<field name="name">FedEx</field>
+			<field name="carrier_type">FedexAccount</field>
+			<field name="icon" type="base64" file="stride_delivery/static/src/img/fedex-logo.png"/>
+		</record>
+		<record id="easypost_carrier_upsdap" model="easypost.carrier.type">
+			<field name="name">UPSDAP</field>
+			<field name="carrier_type">UpsDapAccount</field>
+			<field name="icon" type="base64" file="stride_delivery/static/src/img/ups-logo.png"/>
+		</record>
+
+        <!-- USPS Service Level -->
+        <record id="ep_usps_service_level_1" model="easypost.service.level">
+			<field name="name">First</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_2" model="easypost.service.level">
+			<field name="name">Priority</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_3" model="easypost.service.level">
+			<field name="name">Express</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_4" model="easypost.service.level">
+			<field name="name">ParcelSelect</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_5" model="easypost.service.level">
+			<field name="name">LibraryMail</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_6" model="easypost.service.level">
+			<field name="name">MediaMail</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_7" model="easypost.service.level">
+			<field name="name">FirstClassMailInternational</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_8" model="easypost.service.level">
+			<field name="name">FirstClassPackageInternationalService</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_9" model="easypost.service.level">
+			<field name="name">PriorityMailInternational</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+		<record id="ep_usps_service_level_10" model="easypost.service.level">
+			<field name="name">ExpressMailInternational</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+
+        <!-- UPS Service Level -->
+        <record id="ep_ups_service_level_1" model="easypost.service.level">
+			<field name="name">Ground</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_2" model="easypost.service.level">
+			<field name="name">UPSStandard</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_3" model="easypost.service.level">
+			<field name="name">UPSSaver</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_4" model="easypost.service.level">
+			<field name="name">Express</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_5" model="easypost.service.level">
+			<field name="name">ExpressPlus</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_6" model="easypost.service.level">
+			<field name="name">Expedited</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_7" model="easypost.service.level">
+			<field name="name">NextDayAir</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_8" model="easypost.service.level">
+			<field name="name">NextDayAirSaver</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_9" model="easypost.service.level">
+			<field name="name">NextDayAirEarlyAM</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+		<record id="ep_ups_service_level_10" model="easypost.service.level">
+			<field name="name">2ndDayAirAM</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_service_level_11" model="easypost.service.level">
+			<field name="name">2ndDayAir</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_service_level_12" model="easypost.service.level">
+			<field name="name">3DaySelect</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+
+        <!-- FEDEX Service Level -->
+        <record id="ep_fedex_service_level_1" model="easypost.service.level">
+			<field name="name">FEDEX_GROUND</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_2" model="easypost.service.level">
+			<field name="name">FEDEX_2_DAY</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_3" model="easypost.service.level">
+			<field name="name">FEDEX_2_DAY_AM</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_4" model="easypost.service.level">
+			<field name="name">FEDEX_EXPRESS_SAVER</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_5" model="easypost.service.level">
+			<field name="name">STANDARD_OVERNIGHT</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_6" model="easypost.service.level">
+			<field name="name">FIRST_OVERNIGHT</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_7" model="easypost.service.level">
+			<field name="name">INTERNATIONAL_ECONOMY</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_8" model="easypost.service.level">
+			<field name="name">INTERNATIONAL_FIRST</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_9" model="easypost.service.level">
+			<field name="name">INTERNATIONAL_PRIORITY</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+		<record id="ep_fedex_service_level_10" model="easypost.service.level">
+			<field name="name">GROUND_HOME_DELIVERY</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_service_level_11" model="easypost.service.level">
+			<field name="name">SMART_POST</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+
+		<!-- UPS DAP Service Level -->
+        <record id="ep_upsdap_service_level_1" model="easypost.service.level">
+			<field name="name">Ground</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_2" model="easypost.service.level">
+			<field name="name">UPSStandard</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_3" model="easypost.service.level">
+			<field name="name">UPSSaver</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_4" model="easypost.service.level">
+			<field name="name">Express</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_5" model="easypost.service.level">
+			<field name="name">ExpressPlus</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_6" model="easypost.service.level">
+			<field name="name">Expedited</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_7" model="easypost.service.level">
+			<field name="name">NextDayAir</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_8" model="easypost.service.level">
+			<field name="name">NextDayAirSaver</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_upsdap_service_level_9" model="easypost.service.level">
+			<field name="name">NextDayAirEarlyAM</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		<record id="ep_updap_service_level_10" model="easypost.service.level">
+			<field name="name">2ndDayAirAM</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_service_level_11" model="easypost.service.level">
+			<field name="name">2ndDayAir</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_service_level_12" model="easypost.service.level">
+			<field name="name">3DaySelect</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+
+        <!-- Carrier Predefine Package -->
+        <!-- USPS -->
+        <record id="ep_usps_predefined_package_1" model="carrier.predefine.package">
+			<field name="name">Card</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_2" model="carrier.predefine.package">
+			<field name="name">Letter</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_3" model="carrier.predefine.package">
+			<field name="name">Flat</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_4" model="carrier.predefine.package">
+			<field name="name">FlatRateEnvelope</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_5" model="carrier.predefine.package">
+			<field name="name">FlatRateLegalEnvelope</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_6" model="carrier.predefine.package">
+			<field name="name">FlatRatePaddedEnvelope</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_7" model="carrier.predefine.package">
+			<field name="name">Parcel</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_8" model="carrier.predefine.package">
+			<field name="name">IrregularParcel</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_9" model="carrier.predefine.package">
+			<field name="name">SoftPack</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_10" model="carrier.predefine.package">
+			<field name="name">SmallFlatRateBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_11" model="carrier.predefine.package">
+			<field name="name">MediumFlatRateBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_12" model="carrier.predefine.package">
+			<field name="name">LargeFlatRateBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_13" model="carrier.predefine.package">
+			<field name="name">LargeFlatRateBoxAPOFPO</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_14" model="carrier.predefine.package">
+			<field name="name">RegionalRateBoxA</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+        <record id="ep_usps_predefined_package_15" model="carrier.predefine.package">
+			<field name="name">RegionalRateBoxB</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_usps"/>
+		</record>
+
+        <!-- UPS -->
+        <record id="ep_ups_predefined_package_1" model="carrier.predefine.package">
+			<field name="name">UPSLetter</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_2" model="carrier.predefine.package">
+			<field name="name">UPSExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_3" model="carrier.predefine.package">
+			<field name="name">UPS25kgBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_4" model="carrier.predefine.package">
+			<field name="name">UPS10kgBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_5" model="carrier.predefine.package">
+			<field name="name">Tube</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_6" model="carrier.predefine.package">
+			<field name="name">Pak</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_7" model="carrier.predefine.package">
+			<field name="name">SmallExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_8" model="carrier.predefine.package">
+			<field name="name">MediumExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+        <record id="ep_ups_predefined_package_9" model="carrier.predefine.package">
+			<field name="name">LargeExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_ups"/>
+		</record>
+
+        <!-- FEDEX -->
+        <record id="ep_fedex_predefined_package_1" model="carrier.predefine.package">
+			<field name="name">FedExEnvelope</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_2" model="carrier.predefine.package">
+			<field name="name">FedExBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_3" model="carrier.predefine.package">
+			<field name="name">FedExPak</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_4" model="carrier.predefine.package">
+			<field name="name">FedExTube</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_5" model="carrier.predefine.package">
+			<field name="name">FedEx10kgBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_6" model="carrier.predefine.package">
+			<field name="name">FedEx25kgBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_7" model="carrier.predefine.package">
+			<field name="name">FedExSmallBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_8" model="carrier.predefine.package">
+			<field name="name">FedExMediumBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_9" model="carrier.predefine.package">
+			<field name="name">FedExLargeBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+        <record id="ep_fedex_predefined_package_9" model="carrier.predefine.package">
+			<field name="name">FedExExtraLargeBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_fedex"/>
+		</record>
+
+		<!-- UPS DAP-->
+        <record id="ep_upsdap_predefined_package_1" model="carrier.predefine.package">
+			<field name="name">UPSLetter</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_2" model="carrier.predefine.package">
+			<field name="name">UPSExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_3" model="carrier.predefine.package">
+			<field name="name">UPS25kgBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_4" model="carrier.predefine.package">
+			<field name="name">UPS10kgBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_5" model="carrier.predefine.package">
+			<field name="name">Tube</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_6" model="carrier.predefine.package">
+			<field name="name">Pak</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_7" model="carrier.predefine.package">
+			<field name="name">SmallExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_8" model="carrier.predefine.package">
+			<field name="name">MediumExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+        <record id="ep_upsdap_predefined_package_9" model="carrier.predefine.package">
+			<field name="name">LargeExpressBox</field>
+            <field name="easypost_carrier_type" ref="easypost_carrier_upsdap"/>
+		</record>
+		
+    </data>
+</odoo>

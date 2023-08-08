@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="delivery_zip_prefix" model="ir.ui.view">
+        <field name="name">delivery.zip.prefix.tree</field>
+        <field name="model">delivery.zip.prefix</field>
+        <field name="arch" type="xml">
+            <tree string="Zip Prefix" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_delivery_carrier_form_inherit" model="ir.ui.view">
+        <field name="name">Delivery Carrier Inherit</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Easypost Configuration" attrs="{'invisible': [('delivery_type', '!=', 'easypost')]}">
+                    <group>
+                        <group string="General Carrier Settings">
+                            <field name="easypost_account_id" attrs="{'required': [('delivery_type', '=', 'easypost')]}"/>
+                            <field name="easypost_carrier_id" domain="[('easypost_account_id','=',easypost_account_id)]" attrs="{'required': [('delivery_type', '=', 'easypost')], 'invisible': [('easypost_account_id', '=', False)]}"/>
+                            <field name="service_level" attrs="{'required': [('easypost_carrier_id', '!=', False)], 'invisible': [('easypost_carrier_id', '=', False)]}" domain="[('easypost_carrier_type', '=', easypost_carrier_type)]"/>
+                            <field name="use_third_party"/>
+                            <field name="ship_international" />
+                            <field name="file_type" attrs="{'required': [('delivery_type', '=', 'easypost')]}"/>
+                            <field name="easypost_label_size"/>
+                            <field name="mail_our_delivery"/>
+                            <field name="mail_delivered"/>
+                            <field name="sms_our_delivery"/>
+                            <field name="sms_delivered"/>
+                            <field name="easypost_carrier_type" invisible="1"/>
+                        </group>
+                        <group string="Global Shipping Options">
+                            <field name="add_insurance"/>
+                            <field name="add_sat_delivery"/>
+                            <field name="add_signature"/>
+                            <field name="create_return_label"/>
+                            <field name="quote_max_weight" />
+                            <field name="packaging_id"/>
+                        </group>                        
+                    </group>
+                    <group string="International Shipping Options" attrs="{'invisible': [('ship_international', '=', False)]}">
+                        <field name="customs_certify" attrs="{'invisible': [('ship_international', '=', False)],'required': [('delivery_type', '=', 'easypost')]}"/>
+                        <field name="customs_signer" attrs="{'invisible': [('ship_international', '=', False)],'required': [('delivery_type', '=', 'easypost')]}"/>
+                        <field name="contents_type" attrs="{'invisible': [('ship_international', '=', False)],'required': [('delivery_type', '=', 'easypost')]}"/>
+                        <field name="non_delivery_option" attrs="{'invisible': [('ship_international', '=', False)],'required': [('delivery_type', '=', 'easypost')]}"/>
+                        <!-- <field name="eel_pfc" attrs="{'invisible': [('ship_international', '=', False)],'required': [('delivery_type', '=', 'easypost')]}"/> -->
+                        <field name="use_letterhead" attrs="{'invisible': [('ship_international', '=', False)]}"/>
+                        <field name="use_signature" attrs="{'invisible': [('ship_international', '=', False)]}"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <record id="easypost_service_level_tree_view" model="ir.ui.view">
+        <field name="name">Easypost Service Level Tree View</field>
+        <field name="model">easypost.service.level</field>
+        <field name="arch" type="xml">
+            <tree string="Service Level">
+                <field name="name"/>
+                <field name="easypost_carrier_type"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="easypost_scan_form_tree_view" model="ir.ui.view">
+        <field name="name">Easypost Batch/Scan Form Tree View</field>
+        <field name="model">easypost.scan.form</field>
+        <field name="arch" type="xml">
+            <tree string="Batch/Scan Form">
+                <field name="name"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="easypost_scan_form_tree_view" model="ir.ui.view">
+        <field name="name">Easypost Batch/Scan Form Tree View</field>
+        <field name="model">easypost.scan.form</field>
+        <field name="arch" type="xml">
+            <tree string="Batch/Scan Form">
+                <field name="name"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="easypost_scan_form_Form_view" model="ir.ui.view">
+        <field name="name">Easypost Batch/Sacn Form</field>
+        <field name="model">easypost.scan.form</field>
+        <field name="arch" type="xml">
+            <form string="Batch/Scan Form">
+                <header>
+                    <button name="get_shipments" string="Get Shipments" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" class="oe_highlight"/>
+                    <button name="confirm_data" string="Confirm Form" type="object" attrs="{'invisible': ['|', ('is_shipments', '=', False), ('state', '!=', 'draft')]}" class="oe_highlight"/>
+                    <button name="generate_batch" string="Generate Scan Form" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" class="oe_highlight"/>
+                    <button name="get_scan_form" string="Get Postage Label" type="object" attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done"/>
+                </header>
+                <sheet string="Batch/Scan Form">
+                    <div class="oe_title mb24">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <label for="start_date" string="Date"/>
+                        <div class="o_row" style="width:50% !important;">
+                            <field name="start_date" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'end_date'}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}" style="width:50% !important;"/>
+                            <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
+                            <field name="end_date" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'start_date'}" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}" style="width:50% !important;"/>
+                        </div>
+                        <field name="easypost_carrier_id" required="1" attrs="{'readonly': ['|',('state', '!=', 'draft'),('is_shipments', '!=', False)]}"/>
+                        <field name="shipping_ids" readonly="1" widget="many2many_tags"/>
+                        <field name="batch_id" readonly="1"/>
+                        <field name="scann_form_id" readonly="1"/>
+                        <field name="is_shipments" invisible="1"/>
+                        <field name="form_url" invisible="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="easypost_account_form_Form_view" model="ir.ui.view">
+        <field name="name">Easypost account</field>
+        <field name="model">easypost.account</field>
+        <field name="arch" type="xml">
+            <form string="Easypost account">
+                <header>
+                    <button name="create_easypost_webhook" string="Create Webhook" attrs="{'invisible': [('webhook_id', '!=', False)]}" type="object"  class="oe_highlight"/>
+                    <button name="create_easypost_carrier" string="Import Carrier Accounts"  type="object"  class="oe_highlight"/>
+                </header>
+                <sheet string="Easypost account">
+                    <div class="oe_button_box" name="button_box">                   
+                        <button name="open_easy_post_accounts" class="oe_stat_button" icon="fa-arrows-v" type="object">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_text">Carrier Accounts</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="name" />
+                        <field name="easypost_api_key" password="True"/>
+                        <field name="easypost_api_key_development" password="True"/>
+                        <field name="scanform_prod_environment" />
+                        <field name="webhook_id" invisible="1"/>
+                    </group>    
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_easypost_scan_froms">
+        <field name="name">Easypost Batch/Scan Form</field>
+        <field name="res_model">easypost.scan.form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to Create a Batch/Scan from .
+          </p>
+        </field>
+    </record>
+
+    <record id="easypost_carrier_form" model="ir.ui.view">
+        <field name="name">easypost.carrier.form</field>
+        <field name="model">easypost.carrier</field>
+        <field name="arch" type="xml">
+            <form string="EasyPost Carrier">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="carrier_type"/>
+                            <field name="carrier_account_id"/>
+                        </group>
+                        <group>
+                            <field name="easypost_account_id"/>
+                            <field name="easypost_carrier_type"/>
+                            <field name="bill_third_party_allowed" widget="boolean_toggle"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Carrier Service Level">
+                            <field name="carrier_service_level_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Carrier Predefine Package">
+                            <field name="carrier_predefine_package_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="easypost_carrier_tree" model="ir.ui.view">
+        <field name="name">easypost.carrier.tree</field>
+        <field name="model">easypost.carrier</field>
+        <field name="arch" type="xml">
+            <tree string="EasyPost Carriers">
+                <field name="name"/>
+                <field name="carrier_type"/>
+                <field name="carrier_account_id"/>
+                <field name="easypost_account_id"/>
+                <field name="easypost_carrier_type"/>
+                <field name="bill_third_party_allowed" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_easypost_carriers">
+        <field name="name">EasyPost Carriers</field>
+        <field name="res_model">easypost.carrier</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to Create a your first EasyPost Carrier.
+          </p>
+        </field>
+    </record>
+
+    <record id="easypost_carrier_type_form" model="ir.ui.view">
+        <field name="name">easypost.carrier.type.form</field>
+        <field name="model">easypost.carrier.type</field>
+        <field name="arch" type="xml">
+            <form string="Easypost Carrier Type">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="carrier_type"/>
+                            <field name="icon" widget="image" class="oe_avatar w-auto float-start"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Carrier Service Level">
+                            <field name="carrier_service_level_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Carrier Predefine Package">
+                            <field name="carrier_predefine_package_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="easypost_carrier_type_tree" model="ir.ui.view">
+        <field name="name">easypost.carrier.type.tree</field>
+        <field name="model">easypost.carrier.type</field>
+        <field name="arch" type="xml">
+            <tree string="Easypost Carrier Type">
+                <field name="name"/>
+                <field name="carrier_type"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_easypost_carriers_type">
+        <field name="name">EasyPost Carriers type</field>
+        <field name="res_model">easypost.carrier.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to Create a your first EasyPost Carrier.
+          </p>
+        </field>
+    </record>
+
+    <record id="easypost_shipment_form" model="ir.ui.view">
+        <field name="name">easypost.shipment.form</field>
+        <field name="model">easypost.shipment</field>
+        <field name="arch" type="xml">
+            <form string="EasyPost Shipments">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="rate"/>
+                            <field name="shipping_id"/>
+                            <field name="picking_id"/>
+                            <field name="package_id"/>
+                        </group>
+                        <group>
+                            <field name="label_url" widget="url"/>
+                            <field name="is_return_shipment"/>
+                            <field name="refund_status"/>
+                            <field name="scan_form_status"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Customs Form Details">
+                            <field name="customs_form_url" widget="url"/>
+                            <field name="submit_elec"/>
+                        </group>
+                        <group string="Tracking Details">
+                            <field name="tracking_url" widget="url"/>
+                            <field name="tracking_status"/>
+                            <field name="est_delivery_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="easypost_shipment_tree" model="ir.ui.view">
+        <field name="name">easypost.shipment.tree</field>
+        <field name="model">easypost.shipment</field>
+        <field name="arch" type="xml">
+            <tree string="EasyPost Shipments">
+                <field name="name"/>
+                <field name="rate"/>
+                <field name="shipping_id"/>
+                <field name="picking_id"/>
+                <field name="package_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_easypost_shipments">
+        <field name="name">EasyPost Shipmets</field>
+        <field name="res_model">easypost.shipment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p >
+            Please create a shipment through a Delivery Order
+          </p>
+        </field>
+    </record>
+
+    <record id="easypost_shipment_tracking_form" model="ir.ui.view">
+        <field name="name">easypost.shipment.tracking.form</field>
+        <field name="model">easypost.shipment.tracking</field>
+        <field name="arch" type="xml">
+            <form string="EasyPost Shipments tracking">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="shipment"/>
+                        </group>
+                        <group>
+                            <field name="tracking_city"/>
+                            <field name="tracking_state"/>
+                            <field name="tracking_country"/>
+                            <field name="tracking_zip"/>
+                            <field name="tracking_time"/>
+                            <field name="tracking_status"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="easypost_shipment_tracking_tree" model="ir.ui.view">
+        <field name="name">easypost.shipment.tracking.tree</field>
+        <field name="model">easypost.shipment.tracking</field>
+        <field name="arch" type="xml">
+            <tree string="EasyPost Shipments tracking">
+                <field name="name"/>
+                <field name="shipment"/>
+                <field name="tracking_city"/>
+                <field name="tracking_state"/>
+                <field name="tracking_country"/>
+                <field name="tracking_zip"/>
+                <field name="tracking_time"/>
+                <field name="tracking_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_easypost_shipments_tracking">
+        <field name="name">EasyPost Shipmets tracking</field>
+        <field name="res_model">easypost.shipment.tracking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p >
+            Please create a shipment through a Delivery Order
+          </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_easypost_account">
+        <field name="name">EasyPost Account</field>
+        <field name="res_model">easypost.account</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p >
+            Please create a shipment through a Delivery Order
+          </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_easypost_scan_forms" name="Easypost Batch/Scan Form" parent="stock.menu_stock_warehouse_mgmt" action="action_easypost_scan_froms"/>
+
+    <menuitem id="menu_easypost_account" name="EasyPost Account" parent="stock.menu_delivery" action="action_easypost_account"/>
+    <menuitem id="menu_easypost_shipments" name="EasyPost Shipments" parent="stock.menu_delivery" action="action_easypost_shipments"/>
+
+    <!-- These are really for debug purposes and should only show in debug mode-->
+    <menuitem id="menu_easypost_carriers" name="EasyPost Carriers" parent="stock.menu_delivery" action="action_easypost_carriers"/>
+    <menuitem id="menu_easypost_carriers_type" name="EasyPost Carriers type" parent="stock.menu_delivery" action="action_easypost_carriers_type"/>
+    <menuitem id="menu_easypost_shipments_tracking" name="EasyPost Shipments tracking" parent="stock.menu_delivery" action="action_easypost_shipments_tracking"/>
+
+    <record model="ir.ui.view" id="partner_c_note_form_view">
+        <field name="name">partner.easy_post</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">            
+            <xpath expr="//field[@name='ref']" position="before">
+                <field name="bill_third_party_carrier" domain="[('bill_third_party_allowed', '=', True)]" options="{'no_create_edit': True, 'no_create':True, 'no_open':True}"/>
+                <field name="bill_third_party_account" attrs="{'required':[('bill_third_party_carrier','!=',False)],'invisible': [('bill_third_party_carrier', '=', False)]}"/>
+		        <field name="bill_third_party_zip" attrs="{'required':[('bill_third_party_carrier','!=',False)],'invisible': [('bill_third_party_carrier', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

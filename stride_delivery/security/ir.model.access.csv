@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_easypost_service_level,easypost.service.level,stride_delivery.model_easypost_service_level,,1,1,1,1
+access_easypost_scan_form,easypost.scan.form,stride_delivery.model_easypost_scan_form,,1,1,1,1
+access_easypost_shipment,easypost.shipment,stride_delivery.model_easypost_shipment,,1,1,1,1
+access_carrier_predefine_package,carrier.predefine.package,stride_delivery.model_carrier_predefine_package,,1,1,1,1
+access_easypost_carrier,access_easypost_carrier,model_easypost_carrier,base.group_user,1,1,1,1
+access_easypost_account,access_easypost_account,model_easypost_account,base.group_user,1,1,1,1
+access_easypost_shipment_tracking,easypost.shipment.tracking,stride_delivery.model_easypost_shipment_tracking,,1,1,1,1
+access_easypost_carrier_type,access_easypost_carrier_type,model_easypost_carrier_type,base.group_user,1,1,1,1
+access_easypost_carrier_type_all,access_easypost_carrier_type_all,model_easypost_carrier_type,,1,0,0,0
+access_easypost_shipping_rate,access_easypost_shipping_rate,model_easypost_shipping_rate,base.group_user,1,1,1,1
+access_easypost_shipping_rate_line,access_easypost_shipping_rate_line,model_easypost_shipping_rate_line,base.group_user,1,1,1,1
