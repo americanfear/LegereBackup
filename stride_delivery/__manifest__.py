@@ -11,7 +11,7 @@
 
     'version': '1.0',
     'license': 'Other proprietary',
-    'depends': ['sale_stock', 'delivery', 'web_ir_actions_act_multi', 'stride_sms_twilio'],
+    'depends': ['sale_stock', 'delivery', 'web_ir_actions_act_multi', 'sms'],
     'external_dependencies': {
         'python': ['easypost'],
     },
