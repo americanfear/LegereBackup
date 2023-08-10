@@ -19,9 +19,6 @@ class StrideSalePayment(models.Model):
             email = record.sale_order_id.partner_invoice_id.email or record.sale_order_id.partner_id.email or record.company_id.partner_id.email or 'info@yourcompany.com'
             record.email =  email
 
-    def _get_default_provider(self):
-        return self.env['payment.provider'].search([('state', '!=', 'disabled')], limit=1)
-
     partner_id = fields.Many2one('res.partner', string='Partner', related='sale_order_id.partner_invoice_id')
     amount = fields.Monetary(string='Amount', compute=False, required=True)
     reference = fields.Char(string='Reference', compute='_get_reference')
@@ -29,12 +26,11 @@ class StrideSalePayment(models.Model):
         ('bank', 'Bank Account'),
         ('token', 'Token')], default='card', string='Payment Method', required=True)
     payment_token_id = fields.Many2one('payment.token', string='Saved payment token',
-        domain="[('provider_id', '=', provider_id), ('partner_id', '=', partner_id)]")
+        domain="[('partner_id', '=', partner_id)]")
     company_id = fields.Many2one('res.company', string='Company', readonly=True, required=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', string='Currency', related='company_id.currency_id')
-    provider_id = fields.Many2one('payment.provider', string='Payment Provider', required=True,
-        default=_get_default_provider,
+    provider_id = fields.Many2one('payment.provider', string='Payment Provider', required=False,
         domain="[('state', '!=', 'disabled')]")
     provider_code = fields.Selection(related='provider_id.code', store=True)
     provider_state = fields.Selection(related='provider_id.state', store=True)
@@ -46,7 +42,16 @@ class StrideSalePayment(models.Model):
     auto_invoice = fields.Boolean(string='Create Final Invoice', default=False)
     sale_order_id = fields.Many2one('sale.order', string='Sale Order', required=True)
     authorize_name_on_account = fields.Char(string='Name On Account')
+    authorize_billing_zip_code = fields.Char(string='Billing Zip Code')
     capture_token = fields.Boolean(string='Save payment details', default=True)
+
+    @api.onchange('payment_method')
+    def onchange_payment_method(self):
+        self.provider_id = False
+
+    @api.onchange('payment_token_id')
+    def onchange_payment_token(self):
+        self.provider_id = self.payment_token_id.provider_id.id
 
     @api.onchange('auto_invoice')
     def onchange_auto_invoice(self):

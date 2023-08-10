@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
+        <record id="task_type_edit" model="ir.ui.view">
+            <field name="name">project.task.type.form</field>
+            <field name="model">project.task.type</field>
+            <field name="inherit_id" ref="project.task_type_edit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='fold']" position="after">
+                    <field name="auto_confirm_mo"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="view_task_form2_inherit_custom_service_flow" model="ir.ui.view">
             <field name="name">view.task.form2.inherit_custom_service_flow</field>
             <field name="model">project.task</field>
@@ -27,6 +38,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='user_id']" position="before">
                     <field name="is_work_preparation"/>
+                    <field name="filter_mo_po_based_product" attrs="{'invisible': [('is_work_preparation', '=', False)]}"/>
                 </xpath>
             </field>
         </record>

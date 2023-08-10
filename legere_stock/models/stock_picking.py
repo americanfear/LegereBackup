@@ -1,9 +1,19 @@
 from odoo import api, fields, models, _
 
+class Menu(models.Model):
+    _inherit = "ir.ui.menu"
+
+    @api.model
+    def update_replenishment_menu_group(self):
+        menu_replenish = self.env['ir.model.data']._xmlid_to_res_id('stock.menu_reordering_rules_replenish')
+        stock_group_user = self.env['ir.model.data']._xmlid_to_res_id('stock.group_stock_user')
+        if menu_replenish:
+            menu_replenish = self.env['ir.ui.menu'].browse(menu_replenish)
+            menu_replenish.write({'groups_id': [(6, 0, [stock_group_user])]})
+
 class StockPicking(models.Model):
     _inherit = "stock.picking"
 
-    @api.depends('sale_id')
     def _compute_delivery_picking(self):
         for record in self:
             if record.picking_type_id.warehouse_id.pick_type_id == record.picking_type_id and record.sale_id:
