@@ -11,6 +11,7 @@
     
     'depends': ['stride_payment_sales', 'payment_authorize'],
     'data': [
+        'data/data.xml',
         'wizard/stride_sale_payment_views.xml'
     ],
     'assets': {

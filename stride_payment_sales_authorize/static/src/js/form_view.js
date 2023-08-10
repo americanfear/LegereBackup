@@ -16,12 +16,14 @@ odoo.define('stride_payment_sales_authorize.FormView', function (require) {
                 var cardCVV = event.data.record.data.authorize_card_cvc.trim();
                 var cardExpMonth = event.data.record.data.authorize_card_expiry_month.replaceAll(' ', '');
                 var cardExpYear = event.data.record.data.authorize_card_expiry_year.replaceAll(' ', '');
+                var billingZip = event.data.record.data.authorize_billing_zip_code.replaceAll(' ', '');
                 return {
                     cardData: {
                         cardNumber: cardNumber.replace(/ /g, ''), // Remove all spaces
                         month: cardExpMonth,
                         year: cardExpYear,
                         cardCode: cardCVV,
+                        zip: billingZip,
                     },
                 };
             } 

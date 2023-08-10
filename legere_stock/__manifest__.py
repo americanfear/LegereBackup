@@ -11,8 +11,10 @@
     'website': "https://DreamMtn.Services",
     'support': 'support@DreamMtn.Services',
     
-    'depends': ['stock', 'sale_stock'],
+    'depends': ['stock'],
     'data': [
+        'security/ir.model.access.csv',
+        'data/data.xml',
         'views/report_stockpicking_operations.xml'
     ],
     'application': True,

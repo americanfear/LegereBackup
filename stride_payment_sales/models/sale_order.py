@@ -23,14 +23,20 @@ class SaleOrder(models.Model):
     def action_stride_sale_payment(self):
         form = self.env.ref('stride_payment_sales.stride_sale_payment_form', raise_if_not_found=True)
         self._cr.execute('delete from stride_sale_payment')
-        wiz = self.env['stride.sale.payment'].create({
+        payment_token = self.env['payment.token'].sudo().search([('partner_id', '=', self.partner_invoice_id.id),
+            ('provider_id.state', '!=', 'disabled')], limit=1)
+        vals = {
             'sale_order_id': self.id,
             'amount': self.amount_payment_due,
             'authorize_name_on_account': self.partner_invoice_id.name,
-            'payment_method': 'card',
+            'authorize_billing_zip_code': self.partner_invoice_id.zip,
+            'payment_method': 'token' if payment_token else 'card',
+            'payment_token_id': payment_token.id if payment_token else False,
+            'provider_id': payment_token.provider_id.id if payment_token else False,
             'company_id': self.company_id.id,
             'send_receipt': False
-        })
+        }
+        wiz = self.env['stride.sale.payment'].create(vals)
         return {
             'name': _('Register Payment'),
             'type': 'ir.actions.act_window',

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="stride_printnode_base.StatusMenu" owl="1">
+        <div class="o_printnode_status dropdown">
+            <a class="o_printnode_status_toggler dropdown-toggle o-no-caret o-dropdown--narrow" href="#" title="Direct Print Client Status" role="button" data-toggle="dropdown" aria-expanded="false" aria-haspopup="true" t-on-click="_onStatusMenuShow">
+                <i class="o_printnode_status_icon fa fa-print" role="img" aria-label="Direct Print Client Status" />
+                <t t-if="state.newRelease">
+                    <span class="o_printnode_status_badge badge badge-pill">!</span>
+                </t>
+            </a>
+
+            <div class="o_printnode_status_menu_dropdown dropdown-menu dropdown-menu-right" role="menu">
+                
+                <!-- Printing stats -->
+                <t t-if="state.isManager">
+                    <div class="o_printnode_status_menu_limits">
+                        <t t-foreach="state.limits" t-as="limit" t-key="limit.account">
+                            <div>
+                                <t t-if="limit.error">
+                                    <b><t t-esc="limit.account"/></b>: Something went wrong. Check the details on the Direct Print / Settings page
+                                </t>
+                                <t t-elif="limit.limits">
+                                    <b><t t-esc="limit.account"/></b>: <t t-esc="limit.printed"/>/<t t-esc="limit.limits"/> printed
+                                </t>
+                                <t t-else="">
+                                    <b><t t-esc="limit.account"/></b>: Not Available
+                                    <i class="fa fa-info-circle" title="Number of printed documents and plan limits are unavailable (most likely because this account is a child PrintNode account)" data-toggle="tooltip"></i>
+                                </t>
+                            </div>
+                        </t>
+
+                        <t t-if="!state.limits.length">
+                            <span>No Direct Print accounts added</span>
+                        </t>
+                    </div>
+
+                    <hr />
+                </t>
+
+                <!-- Workstation devices -->
+                <t t-if="!state.devices.length">
+                    <i class="o_printnode_status_loading fa fa-circle-o-notch fa-spin"/>
+                </t>
+
+                <t t-if="state.devices">
+                    <div class="o_printnode_status_menu_devices">
+                        <t t-foreach="state.devices" t-as="device" t-key="device[0]">
+                            <div>
+                                <b><t t-esc="device[0]" />:</b>
+                                <t t-if="device[1]">
+                                    <t t-esc="device[1]" />
+                                </t>
+                                <t t-else="">
+                                    Device isn't set
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+
+        </div>
+    </t>
+
+</templates>
