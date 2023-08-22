@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <record id="view_payment_transactions_batch_filter" model="ir.ui.view">
+            <field name="name">payment.transactions.batch.search</field>
+            <field name="model">payment.transactions.batch</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="BatchNumber"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Provider" name="group_by_provider" domain="[]" context="{'group_by': 'payment_provider_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record model="ir.ui.view" id="view_payment_transactions_batch_tree">
+            <field name="name">payment.transactions.batch.tree</field>
+            <field name="model">payment.transactions.batch</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Payment Transactions Batch">
+                    <field name="payment_provider_id"/>
+                    <field name="BatchNumber"/>
+                    <field name="SubmitDate" widget="date"/>
+                    <field name="State"/>
+                    <field name="amount_total"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record model="ir.ui.view" id="view_payment_transactions_batch_form">
+            <field name="name">payment.transactions.batch.form</field>
+            <field name="model">payment.transactions.batch</field>
+            <field name="arch" type="xml">
+                <form string="Payment Transactions Batch">
+                    <sheet>
+                        <group>
+                            <group class="header_left_group">
+                                <field name="payment_provider_id"/>
+                                <field name="BatchNumber"/>
+                                <field name="SubmitDate" widget="date"/>
+                            </group>
+                            <group class="header_right_group">
+                                <field name="State"/>
+                                <field name="amount_total"/>
+                                <field name="fee_amount"/>
+                                <field name="chargeback_amount"/>
+                                <field name="adjustment_amount"/>
+                                <field name="deposit_amount"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Payment Transactions">
+                                <field name="payment_transaction_ids" readonly="1">
+                                    <tree>
+                                        <field name="reference"/>
+                                        <field name="last_state_change"/>
+                                        <field name="partner_id"/>
+                                        <field name="amount" sum="Sum of Amount" widget="monetary"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_payment_transactions_batch">
+            <field name="name">Payment Transactions Batch</field>
+            <field name="res_model">payment.transactions.batch</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_payment_transactions_batch_tree"/>
+            <field name="context">{'search_default_group_by_provider': 1}</field>
+            <field name="search_view_id" ref="view_payment_transactions_batch_filter"/>
+        </record>
+
+        <menuitem id="menu_payment_reports_settings"
+                  name="Payment Reports"
+                  sequence="300"
+                  groups="account.group_account_user,account.group_account_manager,account.group_account_invoice"
+                  parent="account.menu_finance_reports"/>
+
+        <menuitem id="payment_transactions_menu" name="Payment Transactions" sequence="10" 
+                  parent="menu_payment_reports_settings" action="payment.action_payment_transaction" groups="account.group_account_user,account.group_account_manager,account.group_account_invoice"/>
+
+
+        <menuitem id="payment_transactions_batch_menu" name="Payment Transaction Batches" sequence="21" 
+                  parent="menu_payment_reports_settings" action="action_payment_transactions_batch" groups="account.group_account_user,account.group_account_manager"/>
+    </data>
+</odoo>
