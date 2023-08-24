@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_sale_project_inherit_form">
+            <field name="name">project.task.form</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="sale_project.view_sale_project_inherit_form" />
+            <field name="arch" type="xml">
+                <field name="sale_line_id" position="after">
+                    <field name="order_notes" attrs="{'invisible': [('sale_order_id', '=', False)]}" groups="sales_team.group_sale_salesman"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

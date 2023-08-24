@@ -13,7 +13,7 @@ class AccountMove(models.Model):
         return res
 
     def button_cancel(self):
-        res = super(AccountMove, self).action_post()
+        res = super(AccountMove, self).button_cancel()
         for record in self.filtered(lambda x: x.commission_lines):
             record.commission_lines.unlink()
         return res
