@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stride_payment_transaction_refund,access.stride.payment.transaction.refund,stride_payments.model_stride_payment_transaction_refund,,1,1,1,1
+access_payment_transactions_batch,access.payment.transactions.batch,stride_payments.model_payment_transactions_batch,,1,1,1,1
+access_stride_invoice_payment,access.stride.invoice.payment,stride_payments.model_stride_invoice_payment,,1,1,1,1
+access_payment_provider_account_user,payment.provider.account.user,payment.model_payment_provider,account.group_account_invoice,1,0,0,0

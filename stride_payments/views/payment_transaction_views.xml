@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_transaction_form" model="ir.ui.view">
+        <field name="name">payment.transaction.form</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form"/>
+        <field name="arch" type="xml">
+            <xpath expr='//header' position='inside'>
+                <field name="pending_refund_amount" invisible="1"/>
+                <button type="action" name="%(stride_payments.stride_payment_transaction_refund_action)d" string="Create Refund" class="oe_highlight" attrs="{'invisible': ['|', '|', '|', '|',('provider_id', '=', False), ('provider_code', 'not in', ['stride', 'payengine']), ('amount', '&lt;=', 0.0),('pending_refund_amount', '&lt;=', 0.0), ('state', '!=', 'done')]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_void']" position="attributes">
+                <attribute name="states"></attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'authorized'), ('provider_code', '=', 'stride')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

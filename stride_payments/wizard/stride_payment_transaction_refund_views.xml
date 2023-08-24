@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stride_payment_transaction_refund_form" model="ir.ui.view">
+            <field name="name">stride.payment.transaction.refund.form</field>
+            <field name="model">stride.payment.transaction.refund</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="refund_type"/>
+                        <field name="refund_amount" attrs="{'readonly': [('refund_type', '=', 'full_amount')]}" style="width:25%;"/>
+                        <field name="pending_refund_amount"/>
+                        <field name="transaction_id" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <footer>
+                        <button string="Process Refund" name="do_process_refund" type="object" class="oe_highlight" data-hotkey="q"/>
+                        <button string="Cancel" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="stride_payment_transaction_refund_action" model="ir.actions.act_window">
+            <field name="name">Create Stride Payment Transaction Refund</field>
+            <field name="res_model">stride.payment.transaction.refund</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

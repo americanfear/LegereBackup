@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_payment_transactions_batch_form">
+            <field name="name">payment.transactions.batch.form</field>
+            <field name="model">payment.transactions.batch</field>
+            <field name="inherit_id" ref="stride_payments.view_payment_transactions_batch_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <field name="account_bank_statement_id" invisible="1"/>
+                        <button name="action_create_bank_statement" type="object" string="Create Bank Statement" attrs="{'invisible': ['|', ('account_bank_statement_id', '!=', False), ('payment_transaction_ids', '=',[])]}" class="oe_highlight"/>
+                    </header>
+                </xpath>
+                <xpath expr="//sheet//group" position="before">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bank_statement"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file" attrs="{'invisible':[('account_bank_statement_id', '=', False)]}" string="Bank Statement">
+                        </button>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

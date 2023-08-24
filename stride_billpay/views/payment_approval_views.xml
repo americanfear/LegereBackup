@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="payment_approval_template_tree" model="ir.ui.view">
+            <field name="name">payment.approval.template.tree</field>
+            <field name="model">payment.approval.template</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="approval_type"/>
+                    <field name="min_amount" widget='monetary' options="{'currency_field': 'company_currency_id'}"/>
+                    <field name="max_amount" widget='monetary' options="{'currency_field': 'company_currency_id'}"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="company_currency_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="payment_approval_template_form" model="ir.ui.view">
+            <field name="name">payment.approval.template.form</field>
+            <field name="model">payment.approval.template</field>
+            <field name="arch" type="xml">
+                <form string="Payment Approval Template">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="approval_type"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="min_amount" widget='monetary' options="{'currency_field': 'company_currency_id'}"/>
+                                <field name="max_amount" widget='monetary' options="{'currency_field': 'company_currency_id'}"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="company_currency_id" invisible="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="payment_approval_action" model="ir.actions.act_window">
+            <field name="name">Payment Approval Template</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">payment.approval.template</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new payment approval template.
+                </p>
+            </field>
+        </record>
+
+        <menuitem name="Payment Approval" id="payment_approval_root_menu" parent="account.menu_finance_configuration" sequence="4"/>
+        <menuitem name="Payment Approval Templates" id="approval_template_menu" action="payment_approval_action" parent="payment_approval_root_menu" sequence="10"/>
+    </data>
+</odoo>

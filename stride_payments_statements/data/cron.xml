@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_auto_post_draft_entry" model="ir.cron">
+        <field name="name">Payment Transactions Batch: Create Bank Statements</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=2, minute=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="stride_payments.model_payment_transactions_batch"/>
+        <field name="code">model.transaction_batch_create_bank_statement()</field>
+        <field name="state">code</field>
+    </record>
+</odoo>
