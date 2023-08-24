@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_approval_template_manager,access.payment.approval.template.manager,stride_billpay.model_payment_approval_template,account.group_account_invoice,1,1,1,1
+access_payment_approval_template_user,access.payment.approval.template.user,stride_billpay.model_payment_approval_template,base.group_user,1,0,0,0
+access_payment_approver_manager,access.payment.approver.manager,stride_billpay.model_payment_approver,account.group_account_invoice,1,1,1,1
+access_payment_approver_user,access.payment.approver.user,stride_billpay.model_payment_approver,base.group_user,1,0,0,0
+access_payment_approval_reject_reason_all,access.payment.approval.reject.reason.all,stride_billpay.model_payment_approval_reject_reason,base.group_user,1,1,1,1
