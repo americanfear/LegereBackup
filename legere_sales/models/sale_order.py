@@ -1,4 +1,9 @@
+import logging
+
 from odoo import api, fields, models, _
+from dateutil.relativedelta import relativedelta
+
+_logger = logging.getLogger(__name__)
 
 class SaleAdvancePaymentInv(models.TransientModel):
     _inherit = 'sale.advance.payment.inv'
@@ -19,6 +24,58 @@ class AccountPaymentRegister(models.TransientModel):
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
+
+    @api.model
+    def create_base_automation_auto_create_sale_invoice(self):
+        base_automation_pool = self.env['base.automation']
+        auto_create_sale_invoice = base_automation_pool.search([('name', '=', 'Sale Auto Create Invoice')], limit=1)
+        if not auto_create_sale_invoice:
+            delivery_status_field = self.env['ir.model.fields'].search([('name', '=', 'delivery_status'),
+                ('model', '=', 'sale.order')], limit=1)
+            base_automation_pool.create({
+                "name": "Sale Auto Create Invoice",
+                "trigger": "on_write",
+                "state": 'code',
+                "model_id": self.env.ref("sale.model_sale_order").id,
+                "type": "ir.actions.server",
+                "trigger_field_ids": [(6, 0, [delivery_status_field.id])],
+                "code": "records.auto_create_sale_invoice()",
+            })
+        return
+
+    def auto_create_sale_invoice(self):
+        for record in self:
+            try:
+                if record.delivery_status == 'full':
+                    if record.state in ['draft', 'sent']:
+                        record.action_confirm()
+                    if record.invoice_status == 'to invoice':
+                        sale_advance_payment = self.env['sale.advance.payment.inv'].sudo().create({
+                            'advance_payment_method': 'delivered',
+                            'sale_order_ids': [(6,0, [record.id])],
+                            'deduct_down_payments': True
+                        })
+                        invoice = sale_advance_payment._create_invoices(record)
+                        invoice.action_post()
+
+                        template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
+                        if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.amount_residual != 0.0:
+                            template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
+
+                        if template and invoice.partner_id.email and not invoice.invoice_payment_term_id and invoice.amount_residual == 0.0:
+                            template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
+                        
+                        if not invoice.invoice_payment_term_id and invoice.amount_residual > 0.0:
+                            self.env['mail.activity'].create({
+                                'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+                                'date_deadline': fields.Date.today() + relativedelta(days=1),
+                                'res_id': invoice.id,
+                                'user_id': invoice.invoice_user_id.id,
+                                'res_model_id': self.env['ir.model']._get_id('account.move'),
+                                'summary': 'Issue with auto invoice creation',
+                            })
+            except Exception as e:
+                _logger.error("%s", str(e))
 
     @api.onchange('partner_id')
     def onchange_partner(self):
@@ -43,6 +100,17 @@ class SaleOrder(models.Model):
     license_required = fields.Boolean(string='License Required', compute='_compute_license_required', store=True)
     license_expired = fields.Boolean(string='License Expired', compute='_compute_license_expired')
     customer_current_limit = fields.Monetary(string='Customer Current Limit', compute='_compute_customer_current_limit')
+    allowed_change_unit_price = fields.Boolean(compute='_compute_allowed_change_unit_price')
+    price_change_approved = fields.Boolean(string='Price Change Approved')
+
+    @api.depends('price_change_approved')
+    def _compute_allowed_change_unit_price(self):
+        for record in self:
+            record.allowed_change_unit_price = True if record.price_change_approved or self.env.user.has_group('sales_team.group_sale_manager') else False
+
+    def action_approve_price_change(self):
+        for record in self:
+            record.write({'price_change_approved': True})
 
     def action_confirm_check(self):
         for record in self:
@@ -67,3 +135,8 @@ class SaleOrder(models.Model):
             'res_id': wiz.id,
             'context': self.env.context,
         }
+
+class SaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
+
+    dummy_price_unit = fields.Float(string="Unit Price", related='price_unit', readonly=True)
