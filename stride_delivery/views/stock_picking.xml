@@ -110,6 +110,9 @@
                     <field name="carrier_id" attrs="{'readonly':['|',('has_tracking','=',True),('is_easypost_delivery','=',True)], 'required': [('required_carrier', '!=', False)]}"/>
                     <button style="margin-left:10px;" string="Get Rate" type="object" name="get_easypost_rate" class="btn btn-primary" attrs="{'invisible':[('delivery_type','!=','easypost')]}"/>
                 </div>
+                <field name="cash_on_delivery" attrs="{'invisible': [('delivery_type', '!=', 'easypost')], 'readonly':[('state','=','done')]}" />
+                <field name="cod_method" attrs="{'invisible': [('cash_on_delivery', '=', False)], 'readonly':[('state','=','done')]}"/>
+                <field name="cod_amount" attrs="{'invisible': [('cash_on_delivery', '=', False)], 'readonly':[('state','=','done')]}"/>
                 <field name="add_insurance" attrs="{'invisible': [('delivery_type', '!=', 'easypost')], 'readonly':[('state','=','done')]}" />
                 <field name="add_sat_delivery" attrs="{'invisible': [('delivery_type', '!=', 'easypost')], 'readonly':[('state','=','done')]}" />
                 <field name="add_signature" attrs="{'invisible': [('delivery_type', '!=', 'easypost')], 'readonly':[('state','=','done')]}" />
