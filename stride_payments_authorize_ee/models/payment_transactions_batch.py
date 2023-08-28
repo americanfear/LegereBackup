@@ -12,6 +12,17 @@ _logger = logging.getLogger(__name__)
 class PaymentTransactionsBatch(models.Model):
     _inherit = 'payment.transactions.batch'
 
+    #override fuction to add amex details
+
+    def check_payment_transaction(self, transaction_ID, batch_id, account_type=False):
+        payment_transaction_pool = self.env['payment.transaction']
+        payment_transaction_id = payment_transaction_pool.search([('provider_reference', '=', transaction_ID)], limit=1)
+        if payment_transaction_id:
+            payment_transaction_id.write({'payment_transactions_batch_id': batch_id.id, 'authorize_account_type': account_type,})
+            return True
+        else:
+            return False
+
     @api.model
     def authorize_import_payment_transactions_batch(self, record=False):
         try:
@@ -76,7 +87,8 @@ class PaymentTransactionsBatch(models.Model):
 
                         for transaction in response.get('transactions', []):
                             if transaction.get('transactionStatus') in ['settledSuccessfully']:
-                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id)
+                                account_type = transaction.get('accountType')
+                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id, account_type=account_type)
                                 if not transaction_id:
                                     payment_transaction_pool.create({'provider_id': record.id,
                                         'amount': float(transaction.get('settleAmount')),
@@ -87,10 +99,8 @@ class PaymentTransactionsBatch(models.Model):
                                         'payment_transactions_batch_id': batch_id.id,
                                         'is_post_processed': True,
                                         'state': 'done',
-                                        'authorize_account_type': transaction.get('accountType'),
+                                        'authorize_account_type': account_type,
                                     })
-                                else:
-                                    transaction_id.authorize_account_type = transaction.get('accountType')
         except Exception as e:
             _logger.info("%s", str(e))
 
