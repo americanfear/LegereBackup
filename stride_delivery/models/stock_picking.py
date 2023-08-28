@@ -187,6 +187,7 @@ class StockPicking(models.Model):
                                 line = shipping_rate_line_pool.create({'easypost_shipping_rate_id': shipping_rate_id.id,
                                     'carrier': str(rate.get('carrier')),
                                     'service': str(rate.get('service')),
+                                    'est_delivery_days': int(rate.get('est_delivery_days')) if rate.get('est_delivery_days') else 0,
                                     'rate': float(rate.get('rate'))})
                         result = self.env['ir.actions.act_window']._for_xml_id('stride_delivery.easypost_shipping_rate_action')
                         result['views'] = [(False, 'form')]
@@ -220,6 +221,11 @@ class StockPicking(models.Model):
         for record in self:
             record.is_tracking_available = True if record.ep_shipment_ids else False
 
+    @api.depends('sale_id')
+    def _compute_cod_amount(self):
+        for record in self:
+            record.cod_amount = record.sale_id and record.sale_id.amount_total or 0.0
+
     attachment_ids = fields.Many2many('ir.attachment', 'res_id', 
                                     domain=lambda self: [('res_model', '=', self._name)], 
                                     auto_join=True, string='Attachments')
@@ -232,6 +238,11 @@ class StockPicking(models.Model):
     add_insurance = fields.Boolean('Buy Shipping Insurance')
     add_sat_delivery = fields.Boolean('Request Sat Delivery')
     add_signature = fields.Boolean('Request Adult Sign')
+    cash_on_delivery = fields.Boolean('COD')
+    cod_amount = fields.Float(string='COD Amount', compute='_compute_cod_amount', readonly=False, store=True)
+    cod_method = fields.Selection([('CASH', 'CASH'),
+        ('CHECK', 'CHECK'),
+        ('MONEY_ORDER', 'MONEY ORDER')], default='CASH', string='COD Method')
     create_return_label = fields.Boolean('Create Return Label')
     incoterm_id = fields.Many2one(related="sale_id.incoterm", 
                                 store=True, 
@@ -248,15 +259,25 @@ class StockPicking(models.Model):
                         \n - An ITN is required for any international shipment valued over $2,500 and/or requires an export license unless exemptions apply.""")
     packaging_id = fields.Many2one(
         'stock.package.type', 'Package Type', index=True, check_company=True)
-    customer_contact_no = fields.Char(string='Customer Contact Number', related='partner_id.phone')
+    customer_contact_no = fields.Char(string='Phone #', related='partner_id.phone')
     required_carrier = fields.Boolean(string='Required Carrier', related='picking_type_id.required_carrier')
 
     def button_validate(self):
-        res = super(StockPicking, self).button_validate()
         for record in self:
             if record.carrier_id and record.carrier_id.delivery_type == 'easypost' and record.picking_type_code == 'outgoing' and record.partner_id:
-                if (not record.partner_id.street or not record.partner_id.city or not record.partner_id.state_id or not record.partner_id.zip):
-                    raise UserError(_("Delivery Address is incomplete. Please complete delivery address before confirming (street, city, state, and zip are required)."))
+                zip_required = record.partner_id.country_id and record.partner_id.country_id.zip_required or False
+                state_required = record.partner_id.country_id and record.partner_id.country_id.state_required or False
+                if not record.partner_id.street or not record.partner_id.city or (state_required and not record.partner_id.state_id) or (zip_required and not record.partner_id.zip):
+                    if zip_required and state_required:
+                        raise UserError(_("Delivery Address is incomplete. Please complete delivery address before confirming (street, city, state, and zip are required)."))
+                    elif zip_required and not state_required:
+                        raise UserError(_("Delivery Address is incomplete. Please complete delivery address before confirming (street, city, and zip are required)."))
+                    elif not zip_required and state_required:
+                        raise UserError(_("Delivery Address is incomplete. Please complete delivery address before confirming (street, city, and state are required)."))
+                    elif not zip_required and not state_required:
+                        raise UserError(_("Delivery Address is incomplete. Please complete delivery address before confirming (street and city are required)."))
+        res = super(StockPicking, self).button_validate()
+        for record in self:
             if record.company_id.auto_download_shipping_label and record.ep_shipment_ids.filtered(lambda x: x.label_url):
                 return record.with_context({'reload': True}).action_download_label()
         return res
@@ -304,7 +325,8 @@ class StockPicking(models.Model):
             if record.carrier_id:
                 record.write({'add_insurance': record.carrier_id.add_insurance, 'add_sat_delivery': record.carrier_id.add_sat_delivery,
                     'add_signature': record.carrier_id.add_signature, 'eel_pfc': record.carrier_id.eel_pfc,
-                    'packaging_id': record.carrier_id.packaging_id, 'create_return_label': record.carrier_id.create_return_label})
+                    'packaging_id': record.carrier_id.packaging_id, 'create_return_label': record.carrier_id.create_return_label,
+                    'cash_on_delivery': record.carrier_id.cash_on_delivery})
         return records
 
     @api.onchange('carrier_id')
@@ -316,7 +338,8 @@ class StockPicking(models.Model):
                 'add_signature': self.carrier_id.add_signature,
                 'eel_pfc': self.carrier_id.eel_pfc,
                 'create_return_label': self.carrier_id.create_return_label,
-                'packaging_id': self.carrier_id.packaging_id
+                'packaging_id': self.carrier_id.packaging_id,
+                'cash_on_delivery': self.carrier_id.cash_on_delivery
             })
 
     def update_tracking_button(self):

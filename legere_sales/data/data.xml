@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<odoo>
+    <data noupdate="0">
+        <function model="sale.order" name="create_base_automation_auto_create_sale_invoice"/>
+    </data>
+</odoo>

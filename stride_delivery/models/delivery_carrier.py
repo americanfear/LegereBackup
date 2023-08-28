@@ -19,6 +19,8 @@ class DeliveryCarrier(models.Model):
 
     #Global Options - Can be overriden on the Picking Level
     add_insurance = fields.Boolean('Buy Shipping Insurance')
+    insurance_calculation = fields.Selection([('sale', 'Based On Sale Price'),
+        ('cost', 'Based On Cost Price')], default='sale', string='Insurance Price Calculation')
     add_sat_delivery = fields.Boolean('Request Sat Delivery')
     add_signature = fields.Boolean('Request Adult Sign')
     mail_our_delivery = fields.Boolean('Out for Delivery Email Notification')
@@ -26,6 +28,7 @@ class DeliveryCarrier(models.Model):
     sms_our_delivery = fields.Boolean('Out for Delivery SMS Notification')
     sms_delivered = fields.Boolean('Delivered SMS Notification')
     create_return_label = fields.Boolean('Create Return Label')
+    cash_on_delivery = fields.Boolean('COD')
 
     #customsInfo
     easypost_label_size =fields.Selection([("4x6","4x6"),("4x7","4x7"),("4x8","4x8")], default='4x6', help="Lable size")
@@ -102,7 +105,7 @@ class DeliveryCarrier(models.Model):
             unit_quantity = line.product_uom_id._compute_quantity(line.qty_done, line.product_id.uom_id,
                                                                   rounding_method='HALF-UP') 
             true_customs_value = self._compute_true_customs_value(line)
-            details = {'description': line.product_id.name,
+            details = {'description': line.product_id.name + '-' +str(line.product_id.id),
                         'quantity': unit_quantity,
                         'origin_country': line.product_id.country_of_origin.code or picking.company_id.country_id.code,
                         'value': true_customs_value * unit_quantity or line.product_id.lst_price * unit_quantity,
@@ -332,8 +335,12 @@ class DeliveryCarrier(models.Model):
                             options["saturday_delivery"] = True
 
                         if picking.add_signature:
-                            options["delivery_confirmation"] = "SIGNATURE"  
-                        
+                            options["delivery_confirmation"] = "SIGNATURE"
+
+                        if picking.cash_on_delivery:
+                            options["cod_amount"] = str(picking.cod_amount)
+                            options["cod_method"] = picking.cod_method or 'CASH'
+                                            
                         if picking.incoterm_id:
                             options["incoterm"] = picking.incoterm_id.code  
                         else:
@@ -484,11 +491,7 @@ class DeliveryCarrier(models.Model):
                             _logger.info("label tracking detials created")
 
                             self.get_customs_form(picking, shipment)  
-                            _logger.info("customs form completed")      
-
-                            #check to see if insurance is required and if so, buy insurance on shipment
-                            if picking.add_insurance:
-                                self.buy_insurance(picking, shipment)
+                            _logger.info("customs form completed")
 
                         #Retrieve the cost of the shipment
                         selected_rate = 0
@@ -506,6 +509,16 @@ class DeliveryCarrier(models.Model):
 
                     except Exception as e:
                         raise UserError(_("There Was an Error Creating The label\n" + str(e)))
+
+                    try:
+                        for shipment in confirmed_order.shipments:
+                            #check to see if insurance is required and if so, buy insurance on shipment
+                            if picking.add_insurance:
+                                self.buy_insurance(picking, shipment)
+                    except Exception as e:
+                        self.env.cr.commit()
+                        raise UserError(_("There Was an Error Buy Insurance\n" + str(e)))
+
                 else:
                     raise UserError(_("EasyPost Order Already Created, Please Cancel Existing Order First"))
 
@@ -775,7 +788,11 @@ class DeliveryCarrier(models.Model):
         customs_items = shipment.get('customs_info').get('customs_items')
         insure_amount = 0
         for value in customs_items:
-            insure_amount += float(value.get('value'))
+            if self.insurance_calculation == 'cost':
+                product_id = self.env['product.product'].browse(int(value.get('description').split('-')[-1]))
+                insure_amount += (product_id.standard_price * float(value.get('quantity'))) 
+            else:
+                insure_amount += float(value.get('value'))
         if insure_amount > 0:    
             purchased_shipment = easypost.Shipment.retrieve(shipment_id)
             purchased_shipment.insure(amount=insure_amount)

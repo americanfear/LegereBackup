@@ -31,10 +31,11 @@ class EasypostShippingRate(models.Model):
 class EasypostShippingRateLine(models.Model):
     _name = 'easypost.shipping.rate.line'
     _description = "Shipping Rate Line"
-
+    _order = 'rate'
 
     easypost_shipping_rate_id = fields.Many2one('easypost.shipping.rate', string='Easypost Shipping Rate', ondelete='cascade')
     carrier = fields.Char(string='Carrier', readonly=True)
     service = fields.Char(string='Service', readonly=True)
     rate = fields.Float(string='Rate', readonly=True)
     is_selected = fields.Boolean(string='Selected')
+    est_delivery_days = fields.Integer(string='Estimated Delivery Days')

@@ -1,6 +1,6 @@
 {
     'name': 'Legere Sales',
-    'version': '1.0',
+    'version': '1.0.1',
     'category': 'Sales/Sales',
     'summary': """customization related to sales module""",
     'description': """
@@ -11,9 +11,10 @@
     'website': "https://DreamMtn.Services",
     'support': 'support@DreamMtn.Services',
     
-    'depends': ['sale_management', 'project'],
+    'depends': ['sale_management', 'project', 'sale_stock'],
     'data': [
         'security/ir.model.access.csv',
+        'data/data.xml',
         'views/product_template_views.xml',
         'views/res_partner_views.xml',
         'views/sale_order_views.xml',

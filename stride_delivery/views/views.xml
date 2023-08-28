@@ -34,7 +34,9 @@
                             <field name="easypost_carrier_type" invisible="1"/>
                         </group>
                         <group string="Global Shipping Options">
+                            <field name="cash_on_delivery"/>
                             <field name="add_insurance"/>
+                            <field name="insurance_calculation" attrs="{'required': [('add_insurance', '!=', False)], 'invisible': [('add_insurance', '=', False)]}"/>
                             <field name="add_sat_delivery"/>
                             <field name="add_signature"/>
                             <field name="create_return_label"/>

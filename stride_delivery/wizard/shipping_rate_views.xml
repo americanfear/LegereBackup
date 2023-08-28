@@ -11,6 +11,7 @@
                             <field name="is_selected" widget="boolean_toggle"/>
                             <field name="carrier"/>
                             <field name="service"/>
+                            <field name="est_delivery_days"/>
                             <field name="rate"/>
                         </tree>
                     </field>
