@@ -89,6 +89,8 @@ class PaymentTransactionsBatch(models.Model):
                                         'state': 'done',
                                         'authorize_account_type': transaction.get('accountType'),
                                     })
+                                else:
+                                    transaction_id.authorize_account_type = transaction.get('accountType')
         except Exception as e:
             _logger.info("%s", str(e))
 
