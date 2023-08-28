@@ -28,7 +28,7 @@ class PaymentTransactionsBatch(models.Model):
         try:
             payment_transactions_batch_pool = self.env['payment.transactions.batch']
             payment_transaction_pool = self.env['payment.transaction']
-            from_date = fields.Date.today() - relativedelta(days=30) #requesting a few days back for redundancy, in case a cron fails or they post late)
+            from_date = fields.Date.today() - relativedelta(days=3) #requesting a few days back for redundancy, in case a cron fails or they post late)
             to_date = fields.Date.today()
 
             if record.state == 'enabled':
@@ -135,7 +135,7 @@ class PaymentTransactionsBatch(models.Model):
                         'amount': payment_transaction.amount})
 
 
-                american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type == 'American Express').mapped('amount'))
+                american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type == 'AmericanExpress').mapped('amount'))
                 if american_express_amount != 0.0:
                     account_bank_statement_line_pool.create({'date': SubmitDate_tz and SubmitDate_tz.date() or fields.Date.today(),
                         'journal_id': journal_id.id,
@@ -144,7 +144,7 @@ class PaymentTransactionsBatch(models.Model):
                         'statement_id': account_bank_statement_id.id,
                         'amount': -american_express_amount})
 
-                non_american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type != 'American Express').mapped('amount'))
+                non_american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type != 'AmericanExpress').mapped('amount'))
                 if non_american_express_amount != 0.0:
                     account_bank_statement_line_pool.create({'date': SubmitDate_tz and SubmitDate_tz.date() or fields.Date.today(),
                         'journal_id': journal_id.id,
