@@ -106,7 +106,7 @@ class SaleOrder(models.Model):
     @api.depends('price_change_approved')
     def _compute_allowed_change_unit_price(self):
         for record in self:
-            record.allowed_change_unit_price = True if record.price_change_approved or self.env.user.has_group('sales_team.group_sale_manager') else False
+            record.allowed_change_unit_price = True #if record.price_change_approved or self.env.user.has_group('sales_team.group_sale_manager') else False
 
     def action_approve_price_change(self):
         for record in self:
