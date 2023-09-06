@@ -1,6 +1,6 @@
 {
     'name': 'Legere Custom',
-    'version': '1.0',
+    'version': '1.0.1',
     'category': 'Inventory/Inventory',
     'summary': """generic module""",
     'description': """
@@ -14,10 +14,15 @@
     'depends': ['sale_management', 'sale_stock', 'purchase', 'sale_mrp', 'hr_expense', 'sale_project'],
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_sequence_data.xml',
+        'wizard/import_po_bill_batch_views.xml',
+        'views/res_config_settings_views.xml',
         'views/sale_order_views.xml',
         'views/project_task_views.xml',
         'views/stock_picking_views.xml',
-        'views/mrp_production_views.xml'
+        'views/mrp_production_views.xml',
+        'views/po_bill_batch_views.xml',
+        'views/purchase_order_views.xml',
     ],
     'application': True,
     'installable': True,
