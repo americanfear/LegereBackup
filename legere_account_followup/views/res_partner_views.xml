@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+	<record id="customer_statements_form_view" model="ir.ui.view">
+        <field name="name">customer.statements.followup</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account_followup.customer_statements_form_view"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//field[@name='followup_status']" position="after">
+        		<field name="property_payment_term_id" invisible="1"/>
+        	</xpath>
+        	<xpath expr="//button[@name='%(account_followup.manual_reminder_action)d'][1]" position="attributes">
+        		<attribute name="attrs">{'invisible': ['|', ('followup_status', '!=', 'in_need_of_action'), ('property_payment_term_id', '=', False)]}</attribute>
+        	</xpath>
+        	<xpath expr="//button[@name='%(account_followup.manual_reminder_action)d'][2]" position="attributes">
+        		<attribute name="attrs">{'invisible': ['|', ('followup_status', '=', 'in_need_of_action'), ('property_payment_term_id', '=', False)]}</attribute>
+        	</xpath>
+        </field>
+    </record>
+</odoo>
