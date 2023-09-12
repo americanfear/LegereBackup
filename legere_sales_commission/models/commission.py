@@ -99,10 +99,10 @@ class SaleCommissionLine(models.Model):
             adjusted_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type == 'adjusted_sale_value_discount').mapped('adjusted_amount'))
             
             if adjusted_amount > 0.0:
-                commission_allocations = self.env['commission.allocation'].search([('commission_id', '=', lines.filtered(lambda x: x.commission_type == 'adjusted_sale_value_discount')[0].commission_id.id)], order='commission_per asc')
+                commission_allocations = self.env['commission.allocation'].search([('commission_id', '=', lines.filtered(lambda x: x.commission_type == 'adjusted_sale_value_discount')[0].commission_id.id)], order='min_amount asc')
                 for commission_allocation in commission_allocations:
                     if adjusted_amount > 0.0:
-                        allocation_range_amount = (commission_allocation.max_amount - commission_allocation.min_amount)
+                        allocation_range_amount = (commission_allocation.max_amount - commission_allocation.min_amount) if commission_allocation.max_amount != 0 else adjusted_amount
                         if commission_allocation.commission_per > 0.0:
                             if adjusted_amount > allocation_range_amount:
                                 commission_amount += ((allocation_range_amount * commission_allocation.commission_per) / 100)
