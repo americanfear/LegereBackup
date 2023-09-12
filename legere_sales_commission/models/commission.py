@@ -13,6 +13,7 @@ class Commission(models.Model):
     commission_allocation_ids = fields.One2many('commission.allocation', 'commission_id', string='Commission Allocation')
     company_id = fields.Many2one('res.company', string='Company', required=True,
         default=lambda self: self.env.company)
+    base = fields.Monetary(string='Base')
     active = fields.Boolean(default=True)
 
 class CommissionRule(models.Model):
@@ -96,6 +97,12 @@ class SaleCommissionLine(models.Model):
         user_ids = lines.mapped('user_id')
         for user in user_ids:
             commission_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type != 'adjusted_sale_value_discount').mapped('amount'))
+
+            #Add Base's
+            commission_ids = lines.filtered(lambda x: x.user_id.id == user.id).mapped('commission_id')
+            for commission in commission_ids:
+                commission_amount += commission.base
+
             adjusted_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type == 'adjusted_sale_value_discount').mapped('adjusted_amount'))
             
             if adjusted_amount > 0.0:
