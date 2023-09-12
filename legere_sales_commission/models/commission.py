@@ -50,10 +50,11 @@ class SaleCommission(models.Model):
     _description = "Sale Commission"
     _rec_name = 'user_id'
 
-    @api.depends('lines', 'lines.amount')
-    def _compute_commission_amount(self):
-        for record in self:
-            record.commission_amount = sum(record.lines.mapped('amount'))
+    #Commissions should be computed when they are created
+    # @api.depends('lines', 'lines.amount')
+    # def _compute_commission_amount(self):
+    #     for record in self:
+    #         record.commission_amount = sum(record.lines.mapped('amount'))
 
     user_id = fields.Many2one('res.users', string='Salesperson', required=True)
     from_date = fields.Date(string='From Date', required=True)
@@ -61,7 +62,7 @@ class SaleCommission(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id')
-    commission_amount = fields.Monetary(string='Commission Amount', compute='_compute_commission_amount')
+    commission_amount = fields.Monetary(string='Commission Amount')
     lines = fields.One2many('sale.commission.line', 'sale_commission_id', string='Sale Commission Lines', readonly=True)
 
 class SaleCommissionLine(models.Model):
