@@ -95,8 +95,8 @@ class SaleCommissionLine(models.Model):
             ('sale_commission_id', '=', False)])
         user_ids = lines.mapped('user_id')
         for user in user_ids:
-            commission_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type != 'adjusted_sale_value_fixed').mapped('amount'))
-            adjusted_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type == 'adjusted_sale_value_fixed').mapped('adjusted_amount'))
+            commission_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type != 'adjusted_sale_value_discount').mapped('amount'))
+            adjusted_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type == 'adjusted_sale_value_discount').mapped('adjusted_amount'))
             
             if adjusted_amount > 0.0:
                 commission_allocations = self.env['commission.allocation'].search([('commission_id', '=', lines.filtered(lambda x: x.commission_type == 'adjusted_sale_value_discount')[0].commission_id.id)], order='commission_per asc')
