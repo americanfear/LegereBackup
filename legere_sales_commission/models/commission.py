@@ -13,6 +13,7 @@ class Commission(models.Model):
     commission_allocation_ids = fields.One2many('commission.allocation', 'commission_id', string='Commission Allocation')
     company_id = fields.Many2one('res.company', string='Company', required=True,
         default=lambda self: self.env.company)
+    currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id')
     base = fields.Monetary(string='Base')
     active = fields.Boolean(default=True)
 
