@@ -1,6 +1,6 @@
 {
     'name': 'Legere Custom',
-    'version': '1.0.1',
+    'version': '1.0.2',
     'category': 'Inventory/Inventory',
     'summary': """generic module""",
     'description': """

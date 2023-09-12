@@ -5,22 +5,25 @@
             <field name="name">po.bill.batch.form</field>
             <field name="model">po.bill.batch</field>
             <field name="arch" type="xml">
-                <form string="Purchase Bill Batch" create="0" edit="0">
+                <form string="Purchase Bill Batch" create="1" edit="1">
                     <sheet>
-                        <div>
-                            <h1 style="font-size: 1.9rem;">
-                                <div class="row">
-                                    <div class="col col-md-8">
-                                        <div>
-                                            <field name="name"
-                                                   placeholder="Batch Reference"
-                                                   class="oe_inline"
-                                                   style="width:80% !important;"/>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Batch Reference" readonly="1"/>
                             </h1>
                         </div>
+                        <group>
+                            <group>
+                                <field name="from_date"/>
+                                <field name="to_date"/>
+                            </group>
+                            <group>
+                                <field name="purchase_order_amount"/>
+                                <field name="shipping_cost"/>
+                                <field name="amount_total"/>
+                                <field name="actual_amount_total"/>
+                            </group>
+                        </group>
                         <notebook>
                             <page name="purchase_order" string="Purchase Orders" attrs="{'invisible': [('purchase_order_ids', '=', [])]}">
                                 <field name="purchase_order_ids"/>
@@ -29,9 +32,11 @@
                             <page name="missing_orders" string="Missing Orders" attrs="{'invisible': [('missing_order_ids', '=', [])]}">
                                 <field name="missing_order_ids">
                                     <tree>
-                                        <field name="name"/>
+                                        <field name="po_number"/>
+                                        <field name="name" optional="hide"/>
                                     </tree>
                                     <form>
+                                        <field name="po_number"/>
                                         <field name="name"/>
                                     </form>
                                 </field>
@@ -55,16 +60,6 @@
                                 </field>
                             </page>
                         </notebook>
-                        <group col="12" class="oe_invoice_lines_tab">
-                            <group colspan="8"/>
-                            <group colspan="4">
-                                <group class="oe_subtotal_footer oe_right">
-                                    <field name="purchase_order_amount" />
-                                    <field name="shipping_cost"/>
-                                    <field name="amount_total" class="oe_subtotal_footer_separator"/>
-                                </group>
-                            </group>
-                        </group>
                     </sheet>
                 </form>
             </field>
@@ -74,8 +69,14 @@
             <field name="name">po.bill.batch.list</field>
             <field name="model">po.bill.batch</field>
             <field name="arch" type="xml">
-                <tree string="Purchase Bill Batch" create="0" edit="0">
+                <tree string="Purchase Bill Batch" create="1" edit="1">
                     <field name="name"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="purchase_order_amount" optional="hide"/>
+                    <field name="shipping_cost" optional="hide"/>
+                    <field name="amount_total"/>
+                    <field name="actual_amount_total"/>
                 </tree>
             </field>
         </record>
