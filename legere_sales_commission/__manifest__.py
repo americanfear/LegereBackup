@@ -1,6 +1,6 @@
 {
     'name': 'Legere Sales Commission',
-    'version': '1.0',
+    'version': '1.0.2',
     'category': 'Sales/Sales',
     'summary': """calculating sales person commission""",
     'description': """

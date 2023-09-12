@@ -14,6 +14,7 @@ class PoBillBatchMissingOrder(models.Model):
     _description = "Purchase Bill Batch Missing Order"
 
     name = fields.Text(string='Order Details')
+    po_number = fields.Char(string='P.O.#')
     po_bill_batch_id = fields.Many2one('po.bill.batch', string='Purchase Bill Batch', ondelete="cascade")
 
 class PoBillBatch(models.Model):
@@ -50,6 +51,9 @@ class PoBillBatch(models.Model):
     purchase_order_amount = fields.Monetary(string='Purchase Order Amount', compute='_compute_purchase_order_amount')
     shipping_cost = fields.Monetary(string='Shipping Cost', compute='_compute_shipping_cost')
     amount_total = fields.Monetary(string='Amount Total', compute="_compute_amount_total")
+    actual_amount_total = fields.Monetary(string='Actual Amount Total')
+    from_date = fields.Date(string='From Date')
+    to_date = fields.Date(string='To Date')
 
     @api.model_create_multi
     def create(self, vals_list):

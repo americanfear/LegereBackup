@@ -13,6 +13,8 @@ class Commission(models.Model):
     commission_allocation_ids = fields.One2many('commission.allocation', 'commission_id', string='Commission Allocation')
     company_id = fields.Many2one('res.company', string='Company', required=True,
         default=lambda self: self.env.company)
+    currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id')
+    base = fields.Monetary(string='Base')
     active = fields.Boolean(default=True)
 
 class CommissionRule(models.Model):
@@ -50,10 +52,11 @@ class SaleCommission(models.Model):
     _description = "Sale Commission"
     _rec_name = 'user_id'
 
-    @api.depends('lines', 'lines.amount')
-    def _compute_commission_amount(self):
-        for record in self:
-            record.commission_amount = sum(record.lines.mapped('amount'))
+    #Commissions should be computed when they are created
+    # @api.depends('lines', 'lines.amount')
+    # def _compute_commission_amount(self):
+    #     for record in self:
+    #         record.commission_amount = sum(record.lines.mapped('amount'))
 
     user_id = fields.Many2one('res.users', string='Salesperson', required=True)
     from_date = fields.Date(string='From Date', required=True)
@@ -61,7 +64,7 @@ class SaleCommission(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id')
-    commission_amount = fields.Monetary(string='Commission Amount', compute='_compute_commission_amount')
+    commission_amount = fields.Monetary(string='Commission Amount')
     lines = fields.One2many('sale.commission.line', 'sale_commission_id', string='Sale Commission Lines', readonly=True)
 
 class SaleCommissionLine(models.Model):
@@ -94,14 +97,20 @@ class SaleCommissionLine(models.Model):
             ('sale_commission_id', '=', False)])
         user_ids = lines.mapped('user_id')
         for user in user_ids:
-            commission_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type != 'adjusted_sale_value_fixed').mapped('amount'))
-            adjusted_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type == 'adjusted_sale_value_fixed').mapped('adjusted_amount'))
+            commission_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type != 'adjusted_sale_value_discount').mapped('amount'))
+
+            #Add Base's
+            commission_ids = lines.filtered(lambda x: x.user_id.id == user.id).mapped('commission_id')
+            for commission in commission_ids:
+                commission_amount += commission.base
+
+            adjusted_amount = sum(lines.filtered(lambda x: x.user_id.id == user.id and x.commission_type == 'adjusted_sale_value_discount').mapped('adjusted_amount'))
             
             if adjusted_amount > 0.0:
-                commission_allocations = self.env['commission.allocation'].search([('commission_id', '=', lines.filtered(lambda x: x.commission_type == 'adjusted_sale_value_discount')[0].commission_id.id)], order='commission_per asc')
+                commission_allocations = self.env['commission.allocation'].search([('commission_id', '=', lines.filtered(lambda x: x.commission_type == 'adjusted_sale_value_discount')[0].commission_id.id)], order='min_amount asc')
                 for commission_allocation in commission_allocations:
                     if adjusted_amount > 0.0:
-                        allocation_range_amount = (commission_allocation.max_amount - commission_allocation.min_amount)
+                        allocation_range_amount = (commission_allocation.max_amount - commission_allocation.min_amount) if commission_allocation.max_amount != 0 else adjusted_amount
                         if commission_allocation.commission_per > 0.0:
                             if adjusted_amount > allocation_range_amount:
                                 commission_amount += ((allocation_range_amount * commission_allocation.commission_per) / 100)

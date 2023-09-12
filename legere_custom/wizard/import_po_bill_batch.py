@@ -46,6 +46,7 @@ class ImportPurchaseBillBatch(models.TransientModel):
                             else:
                                 missing_order_pool.create({
                                     'name': data,
+                                    'po_number': data.get('P.O.#'),
                                     'po_bill_batch_id': batch_id.id
                                 })
                     else:
@@ -55,6 +56,7 @@ class ImportPurchaseBillBatch(models.TransientModel):
                         else:
                             missing_order_pool.create({
                                 'name': data,
+                                'po_number': data.get('P.O.#'),
                                 'po_bill_batch_id': batch_id.id
                             })
         if batch_id:
