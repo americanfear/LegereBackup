@@ -21,6 +21,7 @@
                         <page string="Commission Setup">
                             <field name="commission_rule_ids">
                                 <tree>
+                                    <field name="name"/>
                                     <field name="commission_type"/>
                                     <field name="product_category_ids" widget="many2many_tags"/>
                                     <field name="min_discount"/>
@@ -34,6 +35,7 @@
                                 <form>
                                     <group>
                                         <group>
+                                            <field name="name"/>
                                             <field name="commission_type"/>
                                             <field name="product_category_ids" widget="many2many_tags" attrs="{'invisible': [('commission_type', 'not in', ['adjusted_sale_value_discount', 'adjusted_sale_value_fixed'])], 'required': [('commission_type', 'in', ['adjusted_sale_value_discount', 'adjusted_sale_value_fixed'])]}"/>
                                         </group>
