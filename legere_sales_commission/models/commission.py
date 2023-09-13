@@ -21,6 +21,7 @@ class CommissionRule(models.Model):
     _name = "commission.rule"
     _description = "Commission Rule"
 
+    name = fields.Char('Code')
     commission_id = fields.Many2one('commission.commission', string='Commission', ondelete='cascade')
     commission_type = fields.Selection([('new_customer', 'New Customer'),
         ('new_product', 'New Product'),
@@ -84,6 +85,7 @@ class SaleCommissionLine(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', 'Currency', related='company_id.currency_id')
+    sub_total = fields.Monetary(string='Sub Total')
     amount = fields.Monetary(string='Amount')
     adjusted_amount = fields.Monetary(string='Adjusted Amount')
 

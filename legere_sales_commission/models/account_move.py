@@ -29,6 +29,7 @@ class AccountMove(models.Model):
             commission_ids = self.env['commission.commission'].search([('active', '=', True)]).filtered(lambda x: record.invoice_user_id.id in x.user_ids.ids)
             for commission in commission_ids:
                 for commission_rule in commission.commission_rule_ids:
+                    #TODO: We will want to exclude shipping and ensure taxes are not included in these values as they don't pay commissions on those items.
                     if commission_rule.commission_type == 'new_customer' and commission_rule.commission_per > 0.0 and record.is_new_customer:
                         sale_commission_line_pool.create({
                             'invoice_id': record.id,
@@ -38,7 +39,8 @@ class AccountMove(models.Model):
                             'commission_id': commission.id,
                             'commission_rule_id': commission_rule.id,
                             'commission_type': commission_rule.commission_type,
-                            'amount': (record.amount_total * commission_rule.commission_per) / 100
+                            'amount': (record.amount_total * commission_rule.commission_per) / 100,
+                            'sub_total': record.amount_total,
                         })
                     elif commission_rule.commission_type == 'new_product' and commission_rule.commission_per > 0.0 and record.invoice_line_ids.filtered(lambda x: x.is_new_product) and not record.is_new_customer:
                         amount_total = sum(record.invoice_line_ids.filtered(lambda x: x.is_new_product).mapped('price_total'))
@@ -50,7 +52,8 @@ class AccountMove(models.Model):
                             'commission_rule_id': commission_rule.id,
                             'company_id': record.company_id.id,
                             'commission_type': commission_rule.commission_type,
-                            'amount': (amount_total * commission_rule.commission_per) / 100
+                            'amount': (amount_total * commission_rule.commission_per) / 100,
+                            'sub_total': amount_total
                         })
                     elif commission_rule.commission_type == 'adjusted_sale_value_fixed' and not record.is_new_customer and commission_rule.commission_per > 0.0:
                         amount_total = sum(record.invoice_line_ids.filtered(lambda x: not x.is_new_product 
@@ -67,7 +70,8 @@ class AccountMove(models.Model):
                                 'commission_rule_id': commission_rule.id,
                                 'company_id': record.company_id.id,
                                 'commission_type': commission_rule.commission_type,
-                                'amount': (amount_total * commission_rule.commission_per) / 100
+                                'amount': (amount_total * commission_rule.commission_per) / 100,
+                                'sub_total': amount_total
                             })
                     elif commission_rule.commission_type == 'adjusted_sale_value_discount' and not record.is_new_customer and commission_rule.adjusted_amount_rate_per > 0.0:
                         amount_total = sum(record.invoice_line_ids.filtered(lambda x: not x.is_new_product 
@@ -84,7 +88,8 @@ class AccountMove(models.Model):
                                 'commission_rule_id': commission_rule.id,
                                 'company_id': record.company_id.id,
                                 'commission_type': commission_rule.commission_type,
-                                'adjusted_amount': (amount_total * commission_rule.adjusted_amount_rate_per) / 100
+                                'adjusted_amount': (amount_total * commission_rule.adjusted_amount_rate_per) / 100,
+                                'sub_total': amount_total
                             })
 
 class AccountMoveLine(models.Model):
