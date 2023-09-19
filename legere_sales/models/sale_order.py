@@ -89,7 +89,7 @@ class SaleOrder(models.Model):
     @api.onchange('license_partner_id', 'license_partner_id.license_expiration_date')
     def _compute_license_expired(self):
         for record in self:
-            record.license_expired = True if record.license_partner_id and record.license_partner_id.license_expiration_date < fields.Date.today() else False
+            record.license_expired = True if record.license_partner_id and record.license_partner_id.license_expiration_date and record.license_partner_id.license_expiration_date < fields.Date.today() else False
 
     @api.depends('partner_id')
     def _compute_customer_current_limit(self):

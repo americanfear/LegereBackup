@@ -1,6 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="commission_rule_view_tree" model="ir.ui.view">
+        <field name="name">commission.rule.tree</field>
+        <field name="model">commission.rule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="commission_type"/>
+                <field name="product_category_ids" widget="many2many_tags"/>
+                <field name="min_discount"/>
+                <field name="max_discount"/>
+                <field name="commission_per"/>
+                <field name="adjusted_amount_rate_per"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="commission_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_commission_line_view_tree" model="ir.ui.view">
+        <field name="name">sale.commission.line.tree</field>
+        <field name="model">sale.commission.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="commission_type"/>
+                <field name="invoice_id"/>
+                <field name="user_id"/>
+                <field name="commission_id" optional="hide"/>
+                <field name="commission_rule_id" optional="hide"/>
+                <field name="amount"/>
+                <field name="adjusted_amount"/>
+                <field name="sub_total"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="sale_commission_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_commission_line_view_form" model="ir.ui.view">
+        <field name="name">sale.commission.line.form</field>
+        <field name="model">sale.commission.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="commission_type"/>
+                            <field name="invoice_id"/>
+                            <field name="user_id"/>
+                            <field name="commission_id"/>
+                            <field name="commission_rule_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="sale_commission_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="amount" attrs="{'invisible': [('commission_type', '=', 'adjusted_sale_value_discount')]}"/>
+                            <field name="adjusted_amount" attrs="{'invisible': [('commission_type', '!=', 'adjusted_sale_value_discount')]}"/>
+                            <field name="sub_total"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="commission_view_form" model="ir.ui.view">
         <field name="name">commission.view.form</field>
         <field name="model">commission.commission</field>
@@ -10,14 +77,16 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="base"/>
-                            <field name="currency_id" invisible="1"/>
+                            <field name="use_for_manager" widget="boolean_toggle"/>
                         </group>
                         <group>
+                            <field name="manager_id" attrs="{'invisible': [('use_for_manager', '=', False)], 'required': [('use_for_manager', '!=', False)]}"/>
                             <field name="user_ids" widget="many2many_tags"/>
+                            <field name="new_sales_commission_per" attrs="{'invisible': [('use_for_manager', '=', False)], 'required': [('use_for_manager', '!=', False)]}"/>
+                            <field name="regular_sales_commission_per" attrs="{'invisible': [('use_for_manager', '=', False)], 'required': [('use_for_manager', '!=', False)]}"/>
                         </group>
                     </group>
-                    <notebook>
+                    <notebook attrs="{'invisible': [('use_for_manager', '!=', False)]}">
                         <page string="Commission Setup">
                             <field name="commission_rule_ids">
                                 <tree>
@@ -58,6 +127,7 @@
                                     <field name="min_amount"/>
                                     <field name="max_amount"/>
                                     <field name="commission_per"/>
+                                    <field name="commission_rule_ids" widget="many2many_tags"/>
                                     <field name="company_id" groups="base.group_multi_company"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="commission_id" invisible="1"/>
@@ -66,11 +136,12 @@
                                     <group>
                                         <group>
                                             <field name="min_amount"/>
-                                            <field name="commission_per"/>
+                                            <field name="commission_rule_ids" widget="many2many_tags"/>
                                             <field name="commission_id" invisible="1"/>
                                         </group>
                                         <group>
                                             <field name="max_amount"/>
+                                            <field name="commission_per"/>
                                             <field name="company_id" groups="base.group_multi_company"/>
                                             <field name="currency_id" invisible="1"/>
                                         </group>
@@ -107,29 +178,63 @@
         <field name="name">sale.commission.view.form</field>
         <field name="model">sale.commission</field>
         <field name="arch" type="xml">
-            <form create="0" edit="0">
+            <form create="0" edit="1">
+                <header>
+                    <button name="recalculate_amount" type="object" string="Re-Calculate Commission" attrs="{'invisible': [('paid', '!=', False)]}"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="user_id"/>
-                            <field name="commission_amount"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="commission_amount" readonly="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group>
-                            <field name="from_date"/>
-                            <field name="to_date"/>
+                            <field name="from_date" readonly="1"/>
+                            <field name="to_date" readonly="1"/>
+                            <field name="paid" widget="boolean_toggle"/>
+                            <field name="use_for_manager" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
+                        <page string="Salesperson Commission Details" attrs="{'invisible': [('use_for_manager', '=', False)]}">
+                            <field name="user_lines" readonly="1">
+                                <tree>
+                                    <field name="user_id"/>
+                                    <field name="name"/>
+                                    <field name="total_amount" sum="Total"/>
+                                    <field name="commission_amount" sum="Commission Amount"/>
+                                    <field name="company_id" groups="base.group_multi_company"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="sale_commission_id" invisible="1"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="user_id"/>
+                                            <field name="name"/>
+                                        </group>
+                                        <group>
+                                            <field name="total_amount"/>
+                                            <field name="commission_amount"/>
+                                            <field name="company_id" groups="base.group_multi_company"/>
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="sale_commission_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
                         <page string="Commission Details">
-                            <field name="lines">
+                            <field name="lines" readonly="1">
                                 <tree>
                                     <field name="commission_type"/>
                                     <field name="invoice_id"/>
                                     <field name="user_id"/>
-                                    <field name="amount"/>
-                                    <field name="adjusted_amount"/>
+                                    <field name="amount" sum="Amount"/>
+                                    <field name="adjusted_amount" sum="Adjusted Amount"/>
+                                    <field name="sub_total" sum="Sub Total"/>
                                     <field name="company_id" groups="base.group_multi_company"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="sale_commission_id" invisible="1"/>
@@ -147,6 +252,7 @@
                                         <group>
                                             <field name="amount" attrs="{'invisible': [('commission_type', '=', 'adjusted_sale_value_discount')]}"/>
                                             <field name="adjusted_amount" attrs="{'invisible': [('commission_type', '!=', 'adjusted_sale_value_discount')]}"/>
+                                            <field name="sub_total"/>
                                         </group>
                                     </group>
                                 </form>
@@ -162,11 +268,12 @@
         <field name="name">sale.commission.view.tree</field>
         <field name="model">sale.commission</field>
         <field name="arch" type="xml">
-            <tree create="0" edit="0">
+            <tree create="0" edit="1">
                 <field name="user_id"/>
                 <field name="from_date"/>
                 <field name="to_date"/>
                 <field name="commission_amount"/>
+                <field name="paid" widget="boolean_toggle"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="currency_id" invisible="1"/>
             </tree>
