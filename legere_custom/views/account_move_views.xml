@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_invoice_line_analysis" model="ir.actions.act_window">
+            <field name="name">Invoice Lines</field>
+            <field name="res_model">account.move.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="account.view_move_line_tree"/>
+            <field name="search_view_id" ref="account.view_account_move_line_filter"/>
+            <field name="domain">[('move_type', 'in', ['out_invoice', 'out_refund']),('display_type', '=', 'product')]</field>
+        </record>
+
+        <menuitem id="menu_action_invoice_line_analysis" name="Invoice Lines" action="action_invoice_line_analysis" sequence="2" parent="account.account_reports_management_menu"/>
+
+    </data>
+</odoo>

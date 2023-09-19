@@ -11,7 +11,7 @@
     'website': "https://DreamMtn.Services",
     'support': 'support@DreamMtn.Services',
     
-    'depends': ['sale_management', 'sale_stock', 'purchase', 'sale_mrp', 'hr_expense', 'sale_project'],
+    'depends': ['sale_management', 'sale_stock', 'purchase', 'sale_mrp', 'hr_expense', 'sale_project', 'account'],
     'data': [
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
@@ -23,6 +23,7 @@
         'views/mrp_production_views.xml',
         'views/po_bill_batch_views.xml',
         'views/purchase_order_views.xml',
+        'views/account_move_views.xml'
     ],
     'application': True,
     'installable': True,
