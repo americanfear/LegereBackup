@@ -150,7 +150,7 @@ odoo.define('stride_payment_sales_authorize.FormView', function (require) {
                 var authorizeClientKey = event.data.record.data.authorize_client_key;
                 
                 if (event.data.record.data.payment_method == 'card') {
-                    if (event.data.record.data.authorize_card_number == false || event.data.record.data.authorize_card_cvc == false || event.data.record.data.authorize_card_expires == false) {
+                    if (!event.data.record.data.authorize_card_number || !event.data.record.data.authorize_card_cvc || !event.data.record.data.authorize_card_expiry_month || !event.data.record.data.authorize_card_expiry_year) {
                         Dialog.alert(self, '', {
                             title: _t("Validation error"),
                             $content: $('<div/>').html(
@@ -173,7 +173,7 @@ odoo.define('stride_payment_sales_authorize.FormView', function (require) {
                         secureData, response => self.authorizeResponseHandler(event, response)
                     );
                 } else {
-                    if (event.data.record.data.authorize_name_on_account == false || event.data.record.data.authorize_account_number == false || event.data.record.data.authorize_aba_number == false) {
+                    if (!event.data.record.data.authorize_name_on_account || !event.data.record.data.authorize_account_number || !event.data.record.data.authorize_aba_number) {
                         Dialog.alert(self, '', {
                             title: _t("Validation error"),
                             $content: $('<div/>').html(
