@@ -12,17 +12,6 @@ _logger = logging.getLogger(__name__)
 class PaymentTransactionsBatch(models.Model):
     _inherit = 'payment.transactions.batch'
 
-    #override fuction to add amex details
-
-    def check_payment_transaction(self, transaction_ID, batch_id, account_type=False):
-        payment_transaction_pool = self.env['payment.transaction']
-        payment_transaction_id = payment_transaction_pool.search([('provider_reference', '=', transaction_ID)], limit=1)
-        if payment_transaction_id:
-            payment_transaction_id.write({'payment_transactions_batch_id': batch_id.id, 'authorize_account_type': account_type,})
-            return True
-        else:
-            return False
-
     @api.model
     def authorize_import_payment_transactions_batch(self, record=False):
         try:
@@ -86,9 +75,8 @@ class PaymentTransactionsBatch(models.Model):
                         _logger.info("response received:\n%s", pprint.pformat(response))
 
                         for transaction in response.get('transactions', []):
-                            if transaction.get('transactionStatus') in ['settledSuccessfully']:
-                                account_type = transaction.get('accountType')
-                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id, account_type=account_type)
+                            if transaction.get('transactionStatus') in ['settledSuccessfully', 'Refund', 'refund']:
+                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id)
                                 if not transaction_id:
                                     payment_transaction_pool.create({'provider_id': record.id,
                                         'amount': float(transaction.get('settleAmount')),
@@ -99,7 +87,7 @@ class PaymentTransactionsBatch(models.Model):
                                         'payment_transactions_batch_id': batch_id.id,
                                         'is_post_processed': True,
                                         'state': 'done',
-                                        'authorize_account_type': account_type,
+                                        'authorize_account_type': transaction.get('accountType'),
                                     })
         except Exception as e:
             _logger.info("%s", str(e))
@@ -135,7 +123,7 @@ class PaymentTransactionsBatch(models.Model):
                         'amount': payment_transaction.amount})
 
 
-                american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type == 'AmericanExpress').mapped('amount'))
+                american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type == 'American Express').mapped('amount'))
                 if american_express_amount != 0.0:
                     account_bank_statement_line_pool.create({'date': SubmitDate_tz and SubmitDate_tz.date() or fields.Date.today(),
                         'journal_id': journal_id.id,
@@ -144,7 +132,7 @@ class PaymentTransactionsBatch(models.Model):
                         'statement_id': account_bank_statement_id.id,
                         'amount': -american_express_amount})
 
-                non_american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type != 'AmericanExpress').mapped('amount'))
+                non_american_express_amount = sum(record.payment_transaction_ids.filtered(lambda x: x.authorize_account_type != 'American Express').mapped('amount'))
                 if non_american_express_amount != 0.0:
                     account_bank_statement_line_pool.create({'date': SubmitDate_tz and SubmitDate_tz.date() or fields.Date.today(),
                         'journal_id': journal_id.id,

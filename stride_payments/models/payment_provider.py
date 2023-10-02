@@ -1,4 +1,8 @@
+import logging
+
 from odoo import _, api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 class PaymentProvider(models.Model):
     _inherit = 'payment.provider'
@@ -7,17 +11,20 @@ class PaymentProvider(models.Model):
 
     @api.model
     def update_invoice_payment_method_type(self):
-        usio = self.env['ir.module.module'].sudo().search([('name', '=', 'stride_payments_usio')], limit=1)
-        payengine = self.env['ir.module.module'].sudo().search([('name', '=', 'stride_payments_pe')], limit=1)
-        if usio and usio.state == 'installed':
-            payengine_provider = self.env['payment.provider'].search([('code', '=', 'payengine')])
-            if payengine_provider:
-                payengine_provider.write({'stride_payment_method_type': False})
+        try:
+            usio = self.env['ir.module.module'].sudo().search([('name', '=', 'stride_payments_usio')], limit=1)
+            payengine = self.env['ir.module.module'].sudo().search([('name', '=', 'stride_payments_pe')], limit=1)
+            if usio and usio.state == 'installed':
+                payengine_provider = self.env['payment.provider'].search([('code', '=', 'payengine')])
+                if payengine_provider:
+                    payengine_provider.write({'stride_payment_method_type': False})
 
-        if payengine and payengine.state == 'installed':
-            usio_provider = self.env['payment.provider'].search([('code', '=', 'stride')])
-            if usio_provider:
-                usio_provider.write({'payengine_payment_method_type': False})
+            if payengine and payengine.state == 'installed':
+                usio_provider = self.env['payment.provider'].search([('code', '=', 'stride')])
+                if usio_provider:
+                    usio_provider.write({'payengine_payment_method_type': False})
+        except Exception as e:
+            _logger.error("%s", str(e))
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
