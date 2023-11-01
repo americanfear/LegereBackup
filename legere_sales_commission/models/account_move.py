@@ -127,3 +127,22 @@ class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     is_new_product = fields.Boolean(string='New Product', copy=True)
+    is_new_customer = fields.Boolean(string='New Customer', related='move_id.is_new_customer', store=True)
+    commission_code = fields.Char(string='Commission code', compute='_compute_commission_code', store=True)
+
+    @api.depends('move_id.commission_lines', 'move_id.is_new_customer', 'is_new_product')
+    def _compute_commission_code(self):
+        for record in self:
+            record.commission_code = ''
+            if record.move_id.is_new_customer:
+                commission_line = record.move_id.commission_lines.filtered(lambda x: x.commission_type == 'new_customer')
+                if commission_line:
+                    record.commission_code = commission_line[0].commission_rule_id.name
+            elif not record.move_id.is_new_customer and record.is_new_product:
+                commission_line = record.move_id.commission_lines.filtered(lambda x: x.commission_type == 'new_product')
+                if commission_line:
+                    record.commission_code = commission_line[0].commission_rule_id.name
+            elif not record.move_id.is_new_customer and not record.is_new_product:
+                commission_line = record.move_id.commission_lines.filtered(lambda x: x.commission_type in ['adjusted_sale_value_discount', 'adjusted_sale_value_fixed'])
+                if commission_line:
+                    record.commission_code = commission_line[0].commission_rule_id.name
