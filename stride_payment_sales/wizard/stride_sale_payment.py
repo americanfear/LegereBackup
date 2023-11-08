@@ -105,22 +105,16 @@ class StrideSalePayment(models.Model):
 
     def process_token_payment(self, order_id, partner_id, amount, reference, payment_token_id, provider_id, company_id, currency_id, send_receipt, order_confirm, create_downpayment, auto_invoice):
         invoice = self.env['stride.sale.payment'].pre_processing(order_id=order_id, order_confirm=order_confirm, create_downpayment=create_downpayment, auto_invoice=auto_invoice, amount=amount)
-        if invoice:
-            try:
-                invoice.action_post()
-            except Exception as e:
-                invoice.sudo().action_post()
+        if invoice and invoice.state == 'draft':
+            invoice.sudo().action_post()
         payment_provider_id = self.env['payment.provider'].browse(provider_id)
         if hasattr(self.env['stride.sale.payment'], '%s_process_token_payment' % payment_provider_id.code):
             getattr(self.env['stride.sale.payment'], '%s_process_token_payment' % payment_provider_id.code)(order_id=order_id, partner_id=partner_id, amount=amount, reference=reference, payment_token_id=payment_token_id, provider_id=provider_id, company_id=company_id, currency_id=currency_id, send_receipt=send_receipt, invoice=invoice)
 
     def process_card_payment(self, response, order_id, partner_id, amount, reference, provider_id, company_id, currency_id, send_receipt, order_confirm, create_downpayment, auto_invoice, capture_token):
         invoice = self.env['stride.sale.payment'].pre_processing(order_id=order_id, order_confirm=order_confirm, create_downpayment=create_downpayment, auto_invoice=auto_invoice, amount=amount)
-        if invoice:
-            try:
-                invoice.action_post()
-            except Exception as e:
-                invoice.sudo().action_post()
+        if invoice and invoice.state == 'draft':
+            invoice.sudo().action_post()
         payment_provider_id = self.env['payment.provider'].browse(provider_id)
         if hasattr(self.env['stride.sale.payment'], '%s_process_card_payment' % payment_provider_id.code):
             getattr(self.env['stride.sale.payment'], '%s_process_card_payment' % payment_provider_id.code)(response=response, order_id=order_id, partner_id=partner_id, amount=amount, reference=reference, provider_id=provider_id, company_id=company_id, currency_id=currency_id, send_receipt=send_receipt, capture_token=capture_token, invoice=invoice)
