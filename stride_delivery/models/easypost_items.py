@@ -73,6 +73,12 @@ class EasyPostShipment(models.Model):
     est_delivery_date = fields.Datetime(string="Estimated Delivery Date")
 
     def get_tracking_url(self):
+        if self.picking_id and self.picking_id.website_id and self.picking_id.website_id.domain:
+            website_domain = self.picking_id.website_id.domain
+            if 'https:' in website_domain or 'http:' in website_domain:
+                return website_domain + '/tracking/' + self.shipping_id
+            else:
+                return 'https://' + website_domain + '/tracking/' + self.shipping_id
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         if self.shipping_id:
             return base_url + '/tracking/' + self.shipping_id

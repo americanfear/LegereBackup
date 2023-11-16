@@ -380,6 +380,7 @@ class DeliveryCarrier(models.Model):
                                                                'customs_items': custom_items}}}
                             shipment_id += 1
 
+                        flag = False
                         if move_lines_with_package:
                             for package_line in move_lines_with_package:
                                 if package_line.result_package_id not in package_list:
@@ -395,7 +396,8 @@ class DeliveryCarrier(models.Model):
 
                                     #Add package number to label
                                     options["print_custom_2"] = f"""Package: {reference}"""
-
+                                    if flag:
+                                        options["cod_amount"] = str(0.0)
                                     #Set package details
                                     packaging_id = package_line.result_package_id.package_type_id
                                     if packaging_id.shipper_package_code:
@@ -424,6 +426,7 @@ class DeliveryCarrier(models.Model):
                                                                                             'non_delivery_option': self.non_delivery_option,
                                                                                             'customs_items': custom_items}}})
                                     shipment_id += 1
+                                    flag = True
                                 else:
                                     continue
 
