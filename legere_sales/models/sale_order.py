@@ -44,6 +44,8 @@ class SaleOrder(models.Model):
         return
 
     def auto_create_sale_invoice(self):
+        account_move_pool = self.env['account.move']
+        account_journal_pool = self.env['account.journal']
         for record in self:
             try:
                 if record.delivery_status == 'full':
@@ -56,7 +58,83 @@ class SaleOrder(models.Model):
                             'deduct_down_payments': True
                         })
                         invoice = sale_advance_payment._create_invoices(record)
+                        invoice.fiscal_position_id = invoice.company_id.olympia_fiscal_id.id if invoice.company_id.olympia_fiscal_id else False,
                         invoice.action_post()
+
+                        if record.order_line.filtered(lambda x: x.product_id and x.product_id.categ_id.olympia_product):
+                            journal_id = account_journal_pool.search([('type', '=', 'general'),
+                                ('company_id', '=', invoice.company_id.id)], limit=1)
+                            domain = [
+                                ('parent_state', '=', 'posted'),
+                                ('account_type', 'in', ('asset_receivable', 'liability_payable')),
+                                ('reconciled', '=', False),
+                            ]
+                            if record.purchase_order_count > 0:
+                                purchase_order = record._get_purchase_orders()
+
+                                purchase_order.action_create_invoice()
+                                purchase_invoice = purchase_order.invoice_ids
+                                purchase_invoice.write({'ref': purchase_order.partner_ref or purchase_order.name, 'invoice_date': fields.Date.today()})
+                                purchase_invoice.action_post()
+                                if purchase_invoice.company_id.auto_invoice_clearing_account_id:
+                                    purchase_move = account_move_pool.create({
+                                        'date': fields.Date.today(),
+                                        'currency_id': purchase_invoice.currency_id.id,
+                                        'company_id': purchase_invoice.company_id.id,
+                                        'move_type': 'entry',
+                                        'ref': purchase_invoice.name,
+                                        'journal_id': journal_id.id,
+                                        'line_ids': [(0,0,{'name': purchase_invoice.name,
+                                                        'currency_id': purchase_invoice.currency_id.id,
+                                                        'company_id': purchase_invoice.company_id.id,
+                                                        'account_id': purchase_invoice.partner_id.property_account_payable_id.id,
+                                                        'partner_id': purchase_invoice.partner_id.id,
+                                                        'debit': purchase_invoice.amount_residual}),
+                                                    (0,0,{'name': purchase_invoice.name,
+                                                        'currency_id': purchase_invoice.currency_id.id,
+                                                        'company_id': purchase_invoice.company_id.id,
+                                                        'account_id': purchase_invoice.company_id.auto_invoice_clearing_account_id.id,
+                                                        'partner_id': purchase_invoice.partner_id.id,
+                                                        'credit': purchase_invoice.amount_residual})],
+                                    })
+                                    purchase_move.action_post()
+
+                                    purchase_move_lines = purchase_move.sudo().line_ids.filtered_domain(domain)
+                                    lines = purchase_invoice.sudo().line_ids
+                                    for account in purchase_move_lines.account_id:
+                                        (purchase_move_lines + lines)\
+                                            .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
+                                            .sudo().reconcile()
+
+                            if invoice.company_id.auto_invoice_clearing_account_id:
+                                sale_move = account_move_pool.create({
+                                    'date': fields.Date.today(),
+                                    'currency_id': invoice.currency_id.id,
+                                    'company_id': invoice.company_id.id,
+                                    'move_type': 'entry',
+                                    'ref': invoice.name,
+                                    'journal_id': journal_id.id,
+                                    'line_ids': [(0,0,{'name': invoice.name,
+                                                    'currency_id': invoice.currency_id.id,
+                                                    'company_id': invoice.company_id.id,
+                                                    'account_id': invoice.company_id.auto_invoice_clearing_account_id.id,
+                                                    'partner_id': invoice.partner_id.id,
+                                                    'debit': invoice.amount_residual}),
+                                                (0,0,{'name': invoice.name,
+                                                    'currency_id': invoice.currency_id.id,
+                                                    'company_id': invoice.company_id.id,
+                                                    'account_id': invoice.partner_id.property_account_receivable_id.id,
+                                                    'partner_id': invoice.partner_id.id,
+                                                    'credit': invoice.amount_residual})],
+                                })
+                                sale_move.action_post()
+
+                                sale_move_lines = sale_move.sudo().line_ids.filtered_domain(domain)
+                                lines = invoice.sudo().line_ids
+                                for account in sale_move_lines.account_id:
+                                    (sale_move_lines + lines)\
+                                        .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
+                                        .sudo().reconcile()
 
                         template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
                         if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.amount_residual != 0.0:

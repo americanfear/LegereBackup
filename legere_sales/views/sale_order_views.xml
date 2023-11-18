@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <div class="oe_button_box" name="button_box" position="after">
                     <div class="row mt16 o_settings_container" attrs="{'invisible': [('license_expired', '=', False)]}">
-                        <p class="alert alert-warning"> Selected license is expired.</p>
+                        <p class="alert alert-warning" role="alert"> Selected license is expired.</p>
                     </div>
                 </div>
                 <field name="partner_shipping_id" position="after">
