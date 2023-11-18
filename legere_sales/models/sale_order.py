@@ -113,6 +113,7 @@ class SaleOrder(models.Model):
                                     'move_type': 'entry',
                                     'ref': invoice.name,
                                     'journal_id': journal_id.id,
+                                    'fiscal_position_id': invoice.company_id.olympia_fiscal_id.id if invoice.company_id.olympia_fiscal_id else False,
                                     'line_ids': [(0,0,{'name': invoice.name,
                                                     'currency_id': invoice.currency_id.id,
                                                     'company_id': invoice.company_id.id,
