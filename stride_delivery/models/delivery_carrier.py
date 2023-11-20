@@ -380,7 +380,10 @@ class DeliveryCarrier(models.Model):
                             #Only add COD to frist package in a shipment
                             if shipment_id == 0 and picking.cash_on_delivery:
                                 options["cod_amount"] = str(picking.cod_amount)
-                                options["cod_method"] = picking.cod_method or 'CASH'   
+                                options["cod_method"] = picking.cod_method or 'CASH'
+                            else:
+                                options.pop("cod_amount", False)
+                                options.pop("cod_method", False)
                                                             
                             packaging_id = picking.packaging_id
                             parcel = {'weight': weight}
@@ -389,7 +392,7 @@ class DeliveryCarrier(models.Model):
                                                'width': picking.packaging_id.width,
                                                'height': picking.packaging_id.height})
 
-                            shipment = {'0': {'parcel': parcel,
+                            shipment = {'%d' % shipment_id: {'parcel': parcel,
                                               'options': options,
                                               'customs_info': {'eel_pfc': picking.eel_pfc or self.eel_pfc,
                                                                'customs_certify': self.customs_certify,
@@ -416,11 +419,13 @@ class DeliveryCarrier(models.Model):
                                     options["print_custom_2"] = f"""Package: {reference}"""
 
                                     #Only add COD to frist package in a shipment
-                                    
                                     if shipment_id == 0 and picking.cash_on_delivery:
                                         _logger.info(shipment_id)
                                         options["cod_amount"] = str(picking.cod_amount)
                                         options["cod_method"] = picking.cod_method or 'CASH'
+                                    else:
+                                        options.pop("cod_amount", False)
+                                        options.pop("cod_method", False)
 
                                     #Set package details
                                     packaging_id = package_line.result_package_id.package_type_id
@@ -453,10 +458,10 @@ class DeliveryCarrier(models.Model):
                                 else:
                                     continue
 
+                        _logger.info(shipment)
                         shipments = []
                         for ship in shipment.items():
                             shipments.append(ship[1])
-                        _logger.info(shipments)
                         if shipments:
                             #Create Easypost Order But does not puchase until after additional verification
                             order = easypost.Order.create(to_address=to_address, from_address=from_address, shipments=shipments,carrier_accounts=[{"id":picking.carrier_id.easypost_carrier_id.carrier_account_id}])
