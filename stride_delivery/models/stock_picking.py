@@ -62,7 +62,15 @@ class StockPicking(models.Model):
                     "print_custom_1": record.sale_id.client_order_ref or ''
                 }
 
-                if record.carrier_id.use_third_party and reciever.bill_third_party_account:
+                if record.carrier_id.use_third_party and record.carrier_id.use_fix_third_party_account:
+                    options["payment"] = {
+                        "country": reciever.country_id.code,
+                        "account": record.carrier_id.bill_third_party_account_number,
+                        "type": "THIRD_PARTY",                            
+                        "postal_code": record.carrier_id.bill_third_party_zip
+                    }
+
+                if record.carrier_id.use_third_party and not record.carrier_id.use_fix_third_party_account and reciever.bill_third_party_account:
                     options["payment"] = {
                         "country": reciever.country_id.code,
                         "account": reciever.bill_third_party_account,

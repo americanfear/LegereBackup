@@ -24,6 +24,9 @@
                             <field name="easypost_carrier_id" domain="[('easypost_account_id','=',easypost_account_id)]" attrs="{'required': [('delivery_type', '=', 'easypost')], 'invisible': [('easypost_account_id', '=', False)]}"/>
                             <field name="service_level" attrs="{'required': [('easypost_carrier_id', '!=', False)], 'invisible': [('easypost_carrier_id', '=', False)]}" domain="[('easypost_carrier_type', '=', easypost_carrier_type)]"/>
                             <field name="use_third_party"/>
+                            <field name="use_fix_third_party_account" attrs="{'invisible': [('use_third_party', '=', False)]}"/>
+                            <field name="bill_third_party_account_number" attrs="{'required': [('use_fix_third_party_account', '!=', False)], 'invisible': [('use_fix_third_party_account', '=', False)]}"/>
+                            <field name="bill_third_party_zip" attrs="{'required': [('use_fix_third_party_account', '!=', False)], 'invisible': [('use_fix_third_party_account', '=', False)]}"/>
                             <field name="ship_international" />
                             <field name="file_type" attrs="{'required': [('delivery_type', '=', 'easypost')]}"/>
                             <field name="easypost_label_size"/>

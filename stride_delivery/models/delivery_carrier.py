@@ -15,6 +15,9 @@ class DeliveryCarrier(models.Model):
     file_type = fields.Selection([('PNG', 'PNG'), ('PDF', 'PDF'), ('ZPL', 'ZPL'), ('EPL2', 'EPL2')], 'Label File Type', default='PDF')
     service_level = fields.Many2one('easypost.service.level', 'Service Level')
     use_third_party = fields.Boolean(string="Use Third Party Billing")
+    use_fix_third_party_account = fields.Boolean(string="Use Fix Third Party Account")
+    bill_third_party_account_number = fields.Char(string='Billing Account Number')
+    bill_third_party_zip = fields.Char(string="Billing Account ZIP")
     ship_international = fields.Boolean(help="Check if you use this carrier/service level for international shipments")
 
     #Global Options - Can be overriden on the Picking Level
@@ -177,13 +180,20 @@ class DeliveryCarrier(models.Model):
             
             options = { }
             if self.use_third_party:
-                if order.partner_id.bill_third_party_account:
+                if self.use_fix_third_party_account:
                     options["payment"] = {
-                                    "country": order.partner_id.country_id.code,
-                                    "account": order.partner_id.bill_third_party_account,
-                                    "type": "THIRD_PARTY",                            
-                                    "postal_code": order.partner_id.bill_third_party_zip or order.partner_id.zip
-                                    }
+                        "country": order.partner_id.country_id.code,
+                        "account": self.bill_third_party_account_number,
+                        "type": "THIRD_PARTY",                            
+                        "postal_code": self.bill_third_party_zip
+                    }
+                if not self.use_fix_third_party_account and order.partner_id.bill_third_party_account:
+                    options["payment"] = {
+                        "country": order.partner_id.country_id.code,
+                        "account": order.partner_id.bill_third_party_account,
+                        "type": "THIRD_PARTY",                            
+                        "postal_code": order.partner_id.bill_third_party_zip or order.partner_id.zip
+                    }
 
             for prod in single_list:
                 we = we + prod['weight']
@@ -249,7 +259,7 @@ class DeliveryCarrier(models.Model):
                     else:
                         ep_currency = self.env['res.currency'].search([('name', '=', selected_rate['currency'])], limit=1)
                         price = ep_currency._convert(rate_price), order.currency_id, self.env.company, fields.Date.today()
-                    if self.use_third_party and order.partner_id.bill_third_party_account:
+                    if self.use_third_party and (self.use_fix_third_party_account or order.partner_id.bill_third_party_account):
                         return {'success': True,
                                 'price': 0.0,
                                 'error_message': False,
@@ -324,22 +334,26 @@ class DeliveryCarrier(models.Model):
                                 "label_format": picking.carrier_id.file_type,
                                 "print_custom_1": picking.sale_id.client_order_ref or ''
                                 }
-                        if picking.carrier_id.use_third_party and reciever.bill_third_party_account:
+                        if picking.carrier_id.use_third_party and picking.carrier_id.use_fix_third_party_account:
+                            options["payment"] = {
+                                "country": reciever.country_id.code,
+                                "account": picking.carrier_id.bill_third_party_account_number,
+                                "type": "THIRD_PARTY",                            
+                                "postal_code": picking.carrier_id.bill_third_party_zip
+                            }
+
+                        if picking.carrier_id.use_third_party and not picking.carrier_id.use_fix_third_party_account and reciever.bill_third_party_account:
                             options["payment"] = {
                                 "country": reciever.country_id.code,
                                 "account": reciever.bill_third_party_account,
                                 "type": "THIRD_PARTY",                            
                                 "postal_code": reciever.bill_third_party_zip or reciever.zip
-                                }
+                            }
                         if picking.add_sat_delivery:
                             options["saturday_delivery"] = True
 
                         if picking.add_signature:
                             options["delivery_confirmation"] = "SIGNATURE"
-
-                        if picking.cash_on_delivery:
-                            options["cod_amount"] = str(picking.cod_amount)
-                            options["cod_method"] = picking.cod_method or 'CASH'
                                             
                         if picking.incoterm_id:
                             options["incoterm"] = picking.incoterm_id.code  
@@ -363,6 +377,11 @@ class DeliveryCarrier(models.Model):
                             weight = self._weight_to_oz(weight) 
                             custom_items = self._get_custom_details(move_lines_without_package, picking)
                             
+                            #Only add COD to frist package in a shipment
+                            if shipment_id == 0 and picking.cash_on_delivery:
+                                options["cod_amount"] = str(picking.cod_amount)
+                                options["cod_method"] = picking.cod_method or 'CASH'   
+                                                            
                             packaging_id = picking.packaging_id
                             parcel = {'weight': weight}
                             if packaging_id and packaging_id.packaging_length > 0 and packaging_id.width > 0 and packaging_id.height > 0:
@@ -380,7 +399,6 @@ class DeliveryCarrier(models.Model):
                                                                'customs_items': custom_items}}}
                             shipment_id += 1
 
-                        flag = False
                         if move_lines_with_package:
                             for package_line in move_lines_with_package:
                                 if package_line.result_package_id not in package_list:
@@ -396,8 +414,13 @@ class DeliveryCarrier(models.Model):
 
                                     #Add package number to label
                                     options["print_custom_2"] = f"""Package: {reference}"""
-                                    if flag:
-                                        options["cod_amount"] = str(0.0)
+
+                                    #Only add COD to frist package in a shipment
+                                    _logger.info(shipment_id)
+                                    if shipment_id == 0 and picking.cash_on_delivery:
+                                        options["cod_amount"] = str(picking.cod_amount)
+                                        options["cod_method"] = picking.cod_method or 'CASH'
+
                                     #Set package details
                                     packaging_id = package_line.result_package_id.package_type_id
                                     if packaging_id.shipper_package_code:
@@ -426,7 +449,6 @@ class DeliveryCarrier(models.Model):
                                                                                             'non_delivery_option': self.non_delivery_option,
                                                                                             'customs_items': custom_items}}})
                                     shipment_id += 1
-                                    flag = True
                                 else:
                                     continue
 
@@ -579,13 +601,21 @@ class DeliveryCarrier(models.Model):
                 "label_format": picking.carrier_id.file_type,
                 "print_custom_1": picking.sale_id.client_order_ref or ''
                 }
-            if picking.carrier_id.use_third_party and reciever.bill_third_party_account:
+            if picking.carrier_id.use_third_party and picking.carrier_id.use_fix_third_party_account:
                 options["payment"] = {
-                        "country": reciever.country_id.code,
-                        "account": reciever.bill_third_party_account,
-                        "type": "THIRD_PARTY",                            
-                        "postal_code": reciever.bill_third_party_zip or reciever.zip
-                        }
+                    "country": reciever.country_id.code,
+                    "account": picking.carrier_id.bill_third_party_account_number,
+                    "type": "THIRD_PARTY",                            
+                    "postal_code": picking.carrier_id.bill_third_party_zip
+                }
+
+            if picking.carrier_id.use_third_party and not picking.carrier_id.use_fix_third_party_account and reciever.bill_third_party_account:
+                options["payment"] = {
+                    "country": reciever.country_id.code,
+                    "account": reciever.bill_third_party_account,
+                    "type": "THIRD_PARTY",                            
+                    "postal_code": reciever.bill_third_party_zip or reciever.zip
+                }
             if picking.add_sat_delivery:
                 options["saturday_delivery"] = True
 
