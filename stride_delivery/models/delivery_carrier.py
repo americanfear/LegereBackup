@@ -416,8 +416,9 @@ class DeliveryCarrier(models.Model):
                                     options["print_custom_2"] = f"""Package: {reference}"""
 
                                     #Only add COD to frist package in a shipment
-                                    _logger.info(shipment_id)
+                                    
                                     if shipment_id == 0 and picking.cash_on_delivery:
+                                        _logger.info(shipment_id)
                                         options["cod_amount"] = str(picking.cod_amount)
                                         options["cod_method"] = picking.cod_method or 'CASH'
 
