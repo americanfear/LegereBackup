@@ -391,7 +391,7 @@ class DeliveryCarrier(models.Model):
                                                'height': picking.packaging_id.height})
 
                             shipment = {'%d' % shipment_id: {'parcel': parcel,
-                                              'options': options.update(package_options),
+                                              'options': {**options,**package_options},
                                               'customs_info': {'eel_pfc': picking.eel_pfc or self.eel_pfc,
                                                                'customs_certify': self.customs_certify,
                                                                'customs_signer': self.customs_signer,
@@ -440,7 +440,7 @@ class DeliveryCarrier(models.Model):
 
                                     #Add Shipment to the list of shipments
                                     shipment.update({'%d' % shipment_id: {'parcel': parcel,
-                                                                            'options': options.update(package_options),
+                                                                            'options': {**options,**package_options},
                                                                             'reference': reference,
                                                                             'customs_info': {'eel_pfc': picking.eel_pfc or self.eel_pfc,
                                                                                             'customs_certify': self.customs_certify,
