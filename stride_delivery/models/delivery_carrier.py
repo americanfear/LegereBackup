@@ -328,7 +328,7 @@ class DeliveryCarrier(models.Model):
                         shipment = {}
                         shipment_id = 0
 
-                        #Set Shipment Options
+                        #Set Global Shipment Options
                         options = {
                                 'label_size': self.easypost_label_size,
                                 "label_format": picking.carrier_id.file_type,
@@ -376,11 +376,12 @@ class DeliveryCarrier(models.Model):
 
                             weight = self._weight_to_oz(weight) 
                             custom_items = self._get_custom_details(move_lines_without_package, picking)
-                            
+
+                            package_options = {}
                             #Only add COD to frist package in a shipment
                             if shipment_id == 0 and picking.cash_on_delivery:
-                                options["cod_amount"] = str(picking.cod_amount)
-                                options["cod_method"] = picking.cod_method or 'CASH'   
+                                package_options["cod_amount"] = str(picking.cod_amount)
+                                package_options["cod_method"] = picking.cod_method or 'CASH'
                                                             
                             packaging_id = picking.packaging_id
                             parcel = {'weight': weight}
@@ -389,8 +390,8 @@ class DeliveryCarrier(models.Model):
                                                'width': picking.packaging_id.width,
                                                'height': picking.packaging_id.height})
 
-                            shipment = {'0': {'parcel': parcel,
-                                              'options': options,
+                            shipment = {'%d' % shipment_id: {'parcel': parcel,
+                                              'options': {**options,**package_options},
                                               'customs_info': {'eel_pfc': picking.eel_pfc or self.eel_pfc,
                                                                'customs_certify': self.customs_certify,
                                                                'customs_signer': self.customs_signer,
@@ -411,15 +412,14 @@ class DeliveryCarrier(models.Model):
                                     custom_items = self._get_custom_details(pack_package_lines, picking)
                                     
                                     reference = package_line.result_package_id.name
-
+                                    package_options = {}
                                     #Add package number to label
-                                    options["print_custom_2"] = f"""Package: {reference}"""
+                                    package_options["print_custom_2"] = f"""Package: {reference}"""
 
                                     #Only add COD to frist package in a shipment
-                                    _logger.info(shipment_id)
                                     if shipment_id == 0 and picking.cash_on_delivery:
-                                        options["cod_amount"] = str(picking.cod_amount)
-                                        options["cod_method"] = picking.cod_method or 'CASH'
+                                        package_options["cod_amount"] = str(picking.cod_amount)
+                                        package_options["cod_method"] = picking.cod_method or 'CASH'
 
                                     #Set package details
                                     packaging_id = package_line.result_package_id.package_type_id
@@ -440,7 +440,7 @@ class DeliveryCarrier(models.Model):
 
                                     #Add Shipment to the list of shipments
                                     shipment.update({'%d' % shipment_id: {'parcel': parcel,
-                                                                            'options': options,
+                                                                            'options': {**options,**package_options},
                                                                             'reference': reference,
                                                                             'customs_info': {'eel_pfc': picking.eel_pfc or self.eel_pfc,
                                                                                             'customs_certify': self.customs_certify,
@@ -452,10 +452,10 @@ class DeliveryCarrier(models.Model):
                                 else:
                                     continue
 
+                        _logger.info(shipment)
                         shipments = []
                         for ship in shipment.items():
                             shipments.append(ship[1])
-                        _logger.info(shipments)
                         if shipments:
                             #Create Easypost Order But does not puchase until after additional verification
                             order = easypost.Order.create(to_address=to_address, from_address=from_address, shipments=shipments,carrier_accounts=[{"id":picking.carrier_id.easypost_carrier_id.carrier_account_id}])
