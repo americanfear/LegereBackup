@@ -328,7 +328,7 @@ class DeliveryCarrier(models.Model):
                         shipment = {}
                         shipment_id = 0
 
-                        #Set Shipment Options
+                        #Set Global Shipment Options
                         options = {
                                 'label_size': self.easypost_label_size,
                                 "label_format": picking.carrier_id.file_type,
@@ -376,14 +376,12 @@ class DeliveryCarrier(models.Model):
 
                             weight = self._weight_to_oz(weight) 
                             custom_items = self._get_custom_details(move_lines_without_package, picking)
-                            
+
+                            package_options = {}
                             #Only add COD to frist package in a shipment
                             if shipment_id == 0 and picking.cash_on_delivery:
-                                options["cod_amount"] = str(picking.cod_amount)
-                                options["cod_method"] = picking.cod_method or 'CASH'
-                            else:
-                                options.pop("cod_amount", False)
-                                options.pop("cod_method", False)
+                                package_options["cod_amount"] = str(picking.cod_amount)
+                                package_options["cod_method"] = picking.cod_method or 'CASH'
                                                             
                             packaging_id = picking.packaging_id
                             parcel = {'weight': weight}
@@ -393,7 +391,7 @@ class DeliveryCarrier(models.Model):
                                                'height': picking.packaging_id.height})
 
                             shipment = {'%d' % shipment_id: {'parcel': parcel,
-                                              'options': options,
+                                              'options': options.update(package_options),
                                               'customs_info': {'eel_pfc': picking.eel_pfc or self.eel_pfc,
                                                                'customs_certify': self.customs_certify,
                                                                'customs_signer': self.customs_signer,
@@ -414,18 +412,14 @@ class DeliveryCarrier(models.Model):
                                     custom_items = self._get_custom_details(pack_package_lines, picking)
                                     
                                     reference = package_line.result_package_id.name
-
+                                    package_options = {}
                                     #Add package number to label
-                                    options["print_custom_2"] = f"""Package: {reference}"""
+                                    package_options["print_custom_2"] = f"""Package: {reference}"""
 
                                     #Only add COD to frist package in a shipment
                                     if shipment_id == 0 and picking.cash_on_delivery:
-                                        _logger.info(shipment_id)
-                                        options["cod_amount"] = str(picking.cod_amount)
-                                        options["cod_method"] = picking.cod_method or 'CASH'
-                                    else:
-                                        options.pop("cod_amount", False)
-                                        options.pop("cod_method", False)
+                                        package_options["cod_amount"] = str(picking.cod_amount)
+                                        package_options["cod_method"] = picking.cod_method or 'CASH'
 
                                     #Set package details
                                     packaging_id = package_line.result_package_id.package_type_id
@@ -446,7 +440,7 @@ class DeliveryCarrier(models.Model):
 
                                     #Add Shipment to the list of shipments
                                     shipment.update({'%d' % shipment_id: {'parcel': parcel,
-                                                                            'options': options,
+                                                                            'options': options.update(package_options),
                                                                             'reference': reference,
                                                                             'customs_info': {'eel_pfc': picking.eel_pfc or self.eel_pfc,
                                                                                             'customs_certify': self.customs_certify,
