@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='industry_id']" position="after">
-                <field name="hubspot_id"/>
+                <field name="hubspot_id" readonly="1"/>
             </xpath>
         </field>
     </record>
