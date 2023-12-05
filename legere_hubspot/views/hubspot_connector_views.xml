@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <record model="ir.ui.view" id="hubspot_account_form_view">
+        <field name="name">hubspot.account.form.view</field>
+        <field name="model">hubspot.account</field>
+        <field name="arch" type="xml">
+            <form string="Hubspot Account">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="company_id" widget="selection" required="1"/>
+                        </group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="url" widget="url"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hubspot_account_tree_view">
+        <field name="name">hubspot.account.tree.view</field>
+        <field name="model">hubspot.account</field>
+        <field name="arch" type="xml">
+            <tree string="Hubspot Account">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hubspot_account" model="ir.actions.act_window">
+        <field name="name">Hubspot Account</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hubspot.account</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="root_menu_hubspot" name="Hubspot" parent="base.menu_custom" sequence="1"/>
+    <menuitem name="Hubspot Account" id="menu_hubspot_account" parent="root_menu_hubspot"
+            action="action_hubspot_account" sequence="1"/> -->
+
+    <record model="ir.ui.view" id="hubspot_log_form_view">
+        <field name="name">hubspot.log.form.view</field>
+        <field name="model">hubspot.log</field>
+        <field name="arch" type="xml">
+            <form string="Hubspot Log">
+                <sheet>
+                    <group>
+                        <field name="data"/>
+                        <field name="record_id"/>
+                        <field name="is_updated"/>
+                        <field name="error"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hubspot_log_tree_view">
+        <field name="name">hubspot.log.tree.view</field>
+        <field name="model">hubspot.log</field>
+        <field name="arch" type="xml">
+            <tree string="Hubspot Log">
+                <field name="data"/>
+                <field name="record_id"/>
+                <field name="is_updated"/>
+                <field name="error"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hubspot_log" model="ir.actions.act_window">
+        <field name="name">Hubspot Log</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hubspot.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="root_menu_hubspot" name="Hubspot" parent="contacts.res_partner_menu_config" sequence="110"/>
+    <menuitem name="Hubspot Log" id="menu_hubspot_log" parent="root_menu_hubspot"
+            action="action_hubspot_log" sequence="1"/>
+</odoo>

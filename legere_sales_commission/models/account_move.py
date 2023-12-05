@@ -14,7 +14,7 @@ class AccountMove(models.Model):
         return res
 
     def button_cancel(self):
-        res = super(AccountMove, self).action_post()
+        res = super(AccountMove, self).button_cancel()
         for record in self.filtered(lambda x: x.commission_lines):
             if record.commission_lines.filtered(lambda x: x.sale_commission_id and x.sale_commission_id.paid):
                 raise ValidationError(_('This invoice is linked with commission lines that are already paid.'))

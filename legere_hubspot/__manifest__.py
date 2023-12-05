@@ -13,6 +13,9 @@
     
     'depends': ['contacts'],
     'data': [
+        'security/ir.model.access.csv',
+        'views/hubspot_connector_views.xml',
+        'views/res_partner_views.xml',
     ],
     'application': True,
     'installable': True,
