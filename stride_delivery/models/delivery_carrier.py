@@ -412,9 +412,9 @@ class DeliveryCarrier(models.Model):
                                     custom_items = self._get_custom_details(pack_package_lines, picking)
                                     
                                     reference = package_line.result_package_id.name
-                                    package_options = {}
+                                    
                                     #Add package number to label
-                                    package_options["print_custom_2"] = f"""Package: {reference}"""
+                                    package_options = {"print_custom_2": f"""Package: {reference}"""}
 
                                     #Only add COD to frist package in a shipment
                                     if shipment_id == 0 and picking.cash_on_delivery:
