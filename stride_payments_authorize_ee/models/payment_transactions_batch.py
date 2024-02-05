@@ -86,7 +86,7 @@ class PaymentTransactionsBatch(models.Model):
                         _logger.info("response received:\n%s", pprint.pformat(response))
 
                         for transaction in response.get('transactions', []):
-                            if transaction.get('transactionStatus') in ['settledSuccessfully']:
+                            if transaction.get('transactionStatus') in ['settledSuccessfully', 'Refund', 'refund']:
                                 account_type = transaction.get('accountType')
                                 transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id, account_type=account_type)
                                 if not transaction_id:
