@@ -17,10 +17,20 @@ class Hubspot(http.Controller):
         _logger.info("=======Hubspot Data======= %s", json.loads(request.httprequest.data.decode('utf-8')))
         for data in json.loads(request.httprequest.data.decode('utf-8')):
             try:
+                updated = False
+                if data.get('subscriptionType') == 'contact.creation' and data.get('objectId'):
+                    contact = contact_pool.search([('hubspot_id', '=', data.get('objectId'))], limit=1)
+                    if not contact:
+                        contact = contact_pool.create({
+                            'name': 'HubspotContact',
+                            'hubspot_id': data.get('objectId')
+                        })
+                        request.cr.commit()
+                        updated = True  
+                
                 if data.get('subscriptionType') == 'contact.propertyChange' and data.get('objectId'):
                     contact = contact_pool.search([('hubspot_id', '=', data.get('objectId'))], limit=1)
                     if contact:
-                        updated = False
                         if data.get('propertyName') == 'firstname':
                             name_parts = contact.name.split()
                             if len(name_parts) >= 2:
@@ -68,16 +78,22 @@ class Hubspot(http.Controller):
                             if country_id:
                                 contact.write({'country_id': country_id.id})
                                 updated = True
-                        if updated:
-                            hubspot_log_pool.create({
-                                'data': data,
-                                'is_updated': True,
-                                'record_id': contact.id,
-                            })
+                if updated:
+                    hubspot_log_pool.create({
+                        'data': data,
+                        'is_updated': True,
+                        'record_id': contact.id,
+                    })
+                elif not updated and data.get('propertyName') in ['firstname', 'lastname', 'email', 'phone', 'jobtitle', 'mobilephone', 'website', 'address', 'zip', 'city', 'state', 'country']:
+                    hubspot_log_pool.create({
+                        'data': data,
+                        'is_updated': False
+                    })
             except Exception as e:
                 hubspot_log_pool.create({
                     'data': data,
                     'error': str(e),
                 })
+        hubspot_log_pool.search([('is_updated', '=', False)]).update_contact()
         return "Received HubSpot data successfully"
 
