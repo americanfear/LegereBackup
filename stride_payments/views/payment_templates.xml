@@ -2,11 +2,8 @@
 <odoo>
     <data>
         <template inherit_id="payment.checkout" id="checkout" name="Payment Checkout">
-            <label t-if="show_tokenize_input[provider.id]" position="replace">
-                <label>
-                    <input name="o_payment_save_as_token" type="checkbox"/>
-                    Save my payment details
-                </label>
+            <label t-if="show_tokenize_input[provider.id]" position="attributes">
+                <attribute name="t-if"></attribute>
             </label>
         </template>
     </data>

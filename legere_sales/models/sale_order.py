@@ -58,6 +58,7 @@ class SaleOrder(models.Model):
                             'deduct_down_payments': True
                         })
                         invoice = sale_advance_payment._create_invoices(record)
+                        invoice.fiscal_position_id = invoice.company_id.olympia_fiscal_id.id if invoice.company_id.olympia_fiscal_id else False,
                         invoice.action_post()
 
                         if record.order_line.filtered(lambda x: x.product_id and x.product_id.categ_id.olympia_product):
