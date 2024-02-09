@@ -76,7 +76,8 @@ class PaymentTransactionsBatch(models.Model):
 
                         for transaction in response.get('transactions', []):
                             if transaction.get('transactionStatus') in ['settledSuccessfully', 'Refund', 'refund']:
-                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id)
+                                account_type = transaction.get('accountType')
+                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id, account_type=account_type)
                                 if not transaction_id:
                                     payment_transaction_pool.create({'provider_id': record.id,
                                         'amount': float(transaction.get('settleAmount')),

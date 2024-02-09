@@ -52,16 +52,18 @@ class SaleOrder(models.Model):
                     if record.state in ['draft', 'sent']:
                         record.action_confirm()
                     if record.invoice_status == 'to invoice':
+                        olympia_product_orderlines = record.order_line.filtered(lambda x: x.product_id and x.product_id.categ_id.olympia_product)
                         sale_advance_payment = self.env['sale.advance.payment.inv'].sudo().create({
                             'advance_payment_method': 'delivered',
                             'sale_order_ids': [(6,0, [record.id])],
                             'deduct_down_payments': True
                         })
                         invoice = sale_advance_payment._create_invoices(record)
-                        invoice.fiscal_position_id = invoice.company_id.olympia_fiscal_id.id if invoice.company_id.olympia_fiscal_id else False,
+                        if olympia_product_orderlines:
+                            invoice.fiscal_position_id = invoice.company_id.olympia_fiscal_id.id if invoice.company_id.olympia_fiscal_id else False,
                         invoice.action_post()
 
-                        if record.order_line.filtered(lambda x: x.product_id and x.product_id.categ_id.olympia_product):
+                        if olympia_product_orderlines:
                             journal_id = account_journal_pool.search([('type', '=', 'general'),
                                 ('company_id', '=', invoice.company_id.id)], limit=1)
                             domain = [
@@ -136,12 +138,12 @@ class SaleOrder(models.Model):
                                         .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
                                         .sudo().reconcile()
 
-                        template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
-                        if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.amount_residual != 0.0:
-                            template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
+                        # template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
+                        # if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.amount_residual != 0.0:
+                        #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
 
-                        if template and invoice.partner_id.email and not invoice.invoice_payment_term_id and invoice.amount_residual == 0.0:
-                            template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
+                        # if template and invoice.partner_id.email and not invoice.invoice_payment_term_id and invoice.amount_residual == 0.0:
+                        #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
                         
                         if not invoice.invoice_payment_term_id and invoice.amount_residual > 0.0:
                             self.env['mail.activity'].create({

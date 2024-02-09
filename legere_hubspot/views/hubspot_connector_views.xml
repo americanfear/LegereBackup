@@ -51,6 +51,9 @@
         <field name="model">hubspot.log</field>
         <field name="arch" type="xml">
             <form string="Hubspot Log">
+                <header>
+                    <button name="update_contact" string='Update' type='object' attrs="{'invisible': [('is_updated', '!=', False)]}"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="data"/>
