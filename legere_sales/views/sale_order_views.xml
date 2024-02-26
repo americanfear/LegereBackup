@@ -6,6 +6,14 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form" />
             <field name="arch" type="xml">
+                <div class="oe_button_box" name="button_box" position="inside">
+                    <button name="action_view_customer_sale_report" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o" groups="sales_team.group_sale_salesman">
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">Sales Analysis</span>
+                        </div>
+                    </button>
+                </div>
                 <div class="oe_button_box" name="button_box" position="after">
                     <div class="row mt16 o_settings_container" attrs="{'invisible': [('license_expired', '=', False)]}">
                         <p class="alert alert-warning" role="alert"> Selected license is expired.</p>
@@ -24,6 +32,9 @@
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="attributes">
                     <attribute name="attrs">{'readonly': [('qty_invoiced', '&gt;', 0)], 'column_invisible': [('parent.allowed_change_unit_price', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="before">
+                    <field name="discount_amount" groups="product.group_discount_per_so_line" optional="show"/>
                 </xpath>
 
                 <field name="payment_term_id" position="after">

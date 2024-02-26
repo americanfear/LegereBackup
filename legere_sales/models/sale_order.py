@@ -216,7 +216,55 @@ class SaleOrder(models.Model):
             'context': self.env.context,
         }
 
+    def action_view_customer_sale_report(self):
+        self.partner_id._compute_customer_sale_report()
+        action = self.env['ir.actions.act_window']._for_xml_id('legere_sales.action_customer_sale_report')
+        action['domain'] = [('id', 'in', self.partner_id.customer_sale_report_ids.ids)]
+        action['context'] = {}
+        return action
+
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     dummy_price_unit = fields.Float(string="Unit Price", related='price_unit', readonly=True)
+    discount_amount = fields.Float(string='Discount Amount')
+    discount = fields.Float(string="Discount (%)", compute='_compute_discount', digits='Discount', store=True, readonly=False, precompute=True)
+    date_order = fields.Datetime(related='order_id.date_order', string='Order Date', store=True)
+
+    @api.depends('product_id', 'product_uom', 'product_uom_qty', 'discount_amount', 'price_unit')
+    def _compute_discount(self):
+        for line in self:
+            if not line.product_id or line.display_type:
+                line.discount = 0.0
+
+            if not (
+                line.order_id.pricelist_id
+                and line.order_id.pricelist_id.discount_policy == 'without_discount'
+            ):
+                if line.discount_amount == 0.0:
+                    continue
+
+            line.discount = 0.0
+
+            if not line.pricelist_item_id and line.discount_amount == 0.0:
+                # No pricelist rule was found for the product
+                # therefore, the pricelist didn't apply any discount/change
+                # to the existing sales price.
+                continue
+
+            line = line.with_company(line.company_id)
+            pricelist_price = line._get_pricelist_price()
+            base_price = line._get_pricelist_price_before_discount()
+
+            discount_from_pricelist = 0.0
+            if base_price != 0:  # Avoid division by zero
+                discount = (base_price - pricelist_price) / base_price * 100
+                if (discount > 0 and base_price > 0) or (discount < 0 and base_price < 0):
+                    # only show negative discounts if price is negative
+                    # otherwise it's a surcharge which shouldn't be shown to the customer
+                    line.discount = discount
+                    discount_from_pricelist = discount
+
+            if line.discount_amount != 0.0 and line.price_unit != 0.0:
+                discount_per = (line.discount_amount / line.price_unit) * 100
+                line.discount = discount_from_pricelist + discount_per
