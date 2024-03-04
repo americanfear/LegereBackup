@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_sale_order_check_confirm_wizard_all,access_sale_order_check_confirm_wizard_all,model_sale_order_check_confirm_wizard,,1,1,1,1
+access_customer_sale_report_user,access_customer_sale_report_user,model_customer_sale_report,base.group_user,1,1,1,1

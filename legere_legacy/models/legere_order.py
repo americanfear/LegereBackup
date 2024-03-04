@@ -94,6 +94,7 @@ class LegereOrderPart(models.Model):
 
     OrderUID = fields.Char(string='OrderUID')
     OrderID = fields.Many2one('legere.order', string='OrderID', ondelete='cascade')
+    DateOrderEntered = fields.Datetime(string='Date Order Entered', related='OrderID.DateOrderEntered', store=True)
     ProductNumber = fields.Char(string='Product Number')
     QtyOrdered = fields.Float(string='Qty Ordered')
     PrivateLabel = fields.Boolean(string='Private Label')

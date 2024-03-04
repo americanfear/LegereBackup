@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- <record id="customer_sale_report_view_pivot" model="ir.ui.view">
+            <field name="name">customer.sale.report.pivot</field>
+            <field name="model">customer.sale.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Customer Sale Analysis" sample="1">
+                    <field name="product_id" type="row"/>
+                    <field name="last_order_date" interval="day" type="col"/>
+                    <field name="last_order_qty" type="measure"/>
+                    <field name="last_order_price" type="measure"/>
+                    <field name="total_order_qty" type="measure"/>
+                    <field name="total_order_price" type="measure"/>
+                </pivot>
+            </field>
+        </record> -->
+
+        <record id="customer_sale_report_view_tree" model="ir.ui.view">
+            <field name="name">customer.sale.report.tree</field>
+            <field name="model">customer.sale.report</field>
+            <field name="arch" type="xml">
+                <tree string="Sales Analysis" create="0" edit="0">
+                    <field name="product"/>
+                    <field name="last_order_date"/>
+                    <field name="last_order_qty"/>
+                    <field name="last_order_price"/>
+                    <field name="total_order_qty"/>
+                    <field name="total_order_price"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_customer_sale_report" model="ir.actions.act_window">
+            <field name="name">Sales Analysis</field>
+            <field name="res_model">customer.sale.report</field>
+            <field name="view_mode">tree</field>
+        </record>
+    </data>
+</odoo>
