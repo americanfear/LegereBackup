@@ -77,10 +77,11 @@ class PaymentTransactionsBatch(models.Model):
                         for transaction in response.get('transactions', []):
                             if transaction.get('transactionStatus') in ['settledSuccessfully', 'Refund', 'refund']:
                                 account_type = transaction.get('accountType')
-                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), batch_id=batch_id, account_type=account_type)
+                                amount = -float(transaction.get('settleAmount')) if transaction.get('transactionStatus') and transaction.get('transactionStatus') in ['refund', 'Refund'] else float(transaction.get('settleAmount'))
+                                transaction_id = payment_transactions_batch_pool.check_payment_transaction(transaction_ID=transaction.get('transId'), amount=amount, batch_id=batch_id)
                                 if not transaction_id:
                                     payment_transaction_pool.create({'provider_id': record.id,
-                                        'amount': float(transaction.get('settleAmount')),
+                                        'amount': amount,
                                         'currency_id': record.company_id.currency_id.id,
                                         'partner_id': record.company_id.partner_id.id,
                                         'reference': transaction.get('transId'),
