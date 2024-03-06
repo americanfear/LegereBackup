@@ -17,6 +17,13 @@ class StrideInvoicePayment(models.TransientModel):
         for record in self:
             record.amount = sum(record.invoice_ids.mapped('amount_residual'))
 
+    @api.depends('provider_id')
+    def _get_fees(self):
+        for record in self:
+            record.fees = 0.0
+            if record.provider_id:
+                record.fees = record.provider_id._compute_fees(record.amount, record.currency_id, record.partner_id.country_id)
+
     @api.depends('invoice_ids')
     def _get_reference(self):
         for record in self:
@@ -34,6 +41,7 @@ class StrideInvoicePayment(models.TransientModel):
 
     partner_id = fields.Many2one('res.partner', string='Partner', compute='_get_partner', store=True)
     amount = fields.Monetary(string='Amount', compute='_get_amount')
+    fees = fields.Monetary(string='Fees', compute='_get_fees')
     reference = fields.Char(string='Reference', compute='_get_reference')
     invoice_ids = fields.Many2many('account.move', string='Invoices', 
         domain="[('state', '=', 'posted'), ('type', '=', 'out_invoice'), ('invoice_payment_state', '!=', 'paid'), ('partner_id', '=', partner_id)]")
@@ -75,9 +83,11 @@ class StrideInvoicePayment(models.TransientModel):
             payment_provider_id.code,
             prefix=reference
         )
+        fees = payment_provider_id._compute_fees(amount, currency_id, partner_id.country_id)
         return self.env['payment.transaction'].create({
             'provider_id': payment_provider_id.id,
             'amount': amount,
+            'fees': fees,
             'company_id': company_id,
             'currency_id': currency_id,
             'invoice_ids': [(6, 0, invoice_ids.ids)],
@@ -94,8 +104,9 @@ class StrideInvoicePayment(models.TransientModel):
         partner_id = self.env['res.partner'].browse(partner_id)
 
         payment_method_line_id = payment_provider_id.journal_id.inbound_payment_method_line_ids.filtered(lambda x: x.payment_method_id.code == payment_provider_id.code)
+        fees = payment_provider_id._compute_fees(amount, currency_id, partner_id.country_id)
         return self.env['account.payment'].create({
-            'amount': amount,
+            'amount': (amount + fees),
             'company_id': company_id,
             'currency_id': currency_id,
             'journal_id': payment_provider_id.journal_id.id,

@@ -25,11 +25,10 @@ odoo.define('stride_payment_sales.FormView', function (require) {
                 window.location.reload();
             }
             if (event.data.attrs.name === 'action_register_sale_payment'){
-                var payment_footer = document.getElementById('stride_sale_payment_footer');
-                payment_footer.style.display = "none";
+                $('#stride_sale_payment_footer').hide();
                 var self = this;
                 if (event.data.record.data.provider_id == false) {
-                    payment_footer.style.display = "";
+                    $('#stride_sale_payment_footer').show();
                     Dialog.alert(self, '', {
                         title: _t("Validation error"),
                         $content: $('<div/>').html(
@@ -40,7 +39,7 @@ odoo.define('stride_payment_sales.FormView', function (require) {
                 }
 
                 if (event.data.record.data.send_receipt == true && event.data.record.data.partner_email == false){
-                    payment_footer.style.display = "";
+                    $('#stride_sale_payment_footer').show();
                     Dialog.alert(self, '', {
                         title: _t("Validation error"),
                         $content: $('<div/>').html(
@@ -51,7 +50,7 @@ odoo.define('stride_payment_sales.FormView', function (require) {
                 }
 
                 if (event.data.record.data.payment_method == 'token' && event.data.record.data.payment_token_id == false) {
-                    payment_footer.style.display = "";
+                    $('#stride_sale_payment_footer').show();
                     Dialog.alert(self, '', {
                         title: _t("Validation error"),
                         $content: $('<div/>').html(
@@ -62,7 +61,6 @@ odoo.define('stride_payment_sales.FormView', function (require) {
                 }
 
                 await self['processSalePayment' + event.data.record.data.provider_code](event);
-                payment_footer.style.display = "";
             }
         },
     });
