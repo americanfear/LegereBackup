@@ -17,7 +17,7 @@ class PaymentTransactionsBatch(models.Model):
         try:
             payment_transactions_batch_pool = self.env['payment.transactions.batch']
             payment_transaction_pool = self.env['payment.transaction']
-            from_date = fields.Date.today() - relativedelta(days=3) #requesting a few days back for redundancy, in case a cron fails or they post late)
+            from_date = fields.Date.today() - relativedelta(days=30) #requesting a few days back for redundancy, in case a cron fails or they post late)
             to_date = fields.Date.today()
 
             if record.state == 'enabled':
