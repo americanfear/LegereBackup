@@ -1,6 +1,6 @@
 {
     'name': 'Legere Custom',
-    'version': '1.0.2',
+    'version': '1.0.3',
     'category': 'Inventory/Inventory',
     'summary': """generic module""",
     'description': """
@@ -16,6 +16,7 @@
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
         'wizard/import_po_bill_batch_views.xml',
+        'wizard/account_payment_register_views.xml',
         'views/res_config_settings_views.xml',
         'views/sale_order_views.xml',
         'views/project_task_views.xml',
@@ -23,7 +24,8 @@
         'views/mrp_production_views.xml',
         'views/po_bill_batch_views.xml',
         'views/purchase_order_views.xml',
-        'views/account_move_views.xml'
+        'views/account_move_views.xml',
+        'views/account_payment_views.xml'
     ],
     'application': True,
     'installable': True,
