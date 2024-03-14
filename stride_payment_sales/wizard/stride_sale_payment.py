@@ -87,14 +87,14 @@ class StrideSalePayment(models.Model):
         sale_order = self.env['sale.order'].browse(order_id)
         if order_confirm and sale_order.state in ['draft', 'sent']:
             sale_order.action_confirm()
-        if create_downpayment and sale_order.state in ['sale']:
+        if create_downpayment and sale_order.state in ['sale', 'done']:
             sale_advance_payment = self.env['sale.advance.payment.inv'].sudo().create({
                 'advance_payment_method': 'fixed',
                 'sale_order_ids': [(6,0, [sale_order.id])],
                 'fixed_amount': amount
             })
             return sale_advance_payment._create_invoices(sale_order)
-        if auto_invoice and sale_order.state in ['sale']:
+        if auto_invoice and sale_order.state in ['sale', 'done']:
             sale_advance_payment = self.env['sale.advance.payment.inv'].sudo().create({
                 'advance_payment_method': 'delivered',
                 'sale_order_ids': [(6,0, [sale_order.id])],
