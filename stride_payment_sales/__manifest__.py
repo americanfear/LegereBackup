@@ -1,6 +1,6 @@
 {
     'name': 'Stride: Payment Sales',
-    'version': '16.0.1.0.1',
+    'version': '16.0.1.0.2',
     'category': 'Sales/Payment',
     'summary': """Stride Payment""",
     'description': """Stride Payment""",
