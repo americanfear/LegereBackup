@@ -1,4 +1,3 @@
-
 from odoo import api, fields, models
 from datetime import datetime
 
@@ -32,7 +31,8 @@ class PaymentTransactionsBatch(models.Model):
     @api.depends('payment_transaction_ids', 'payment_transaction_ids.amount', 'fee_amount', 'chargeback_amount', 'adjustment_amount')
     def _compute_deposit_amount(self):
         for record in self:
-            record.deposit_amount = sum(record.payment_transaction_ids.mapped('amount')) - record.fee_amount - record.chargeback_amount - record.adjustment_amount
+            #record.deposit_amount = sum(record.payment_transaction_ids.mapped('amount')) + record.fee_amount + record.chargeback_amount + record.adjustment_amount
+            record.deposit_amount = sum(record.payment_transaction_ids.mapped('amount')) + record.fee_amount + record.adjustment_amount
 
     BatchNumber = fields.Char(string='Batch Number', required=True)
     SubmitDate = fields.Datetime(string='Batch Date', required=False)
@@ -48,9 +48,10 @@ class PaymentTransactionsBatch(models.Model):
     adjustment_amount = fields.Monetary(string='Adjustment Amount')
     deposit_amount = fields.Monetary(string='Deposit Amount', compute='_compute_deposit_amount')
 
-    def check_payment_transaction(self, transaction_ID, batch_id):
+    def check_payment_transaction(self, transaction_ID, amount, batch_id):
         payment_transaction_pool = self.env['payment.transaction']
-        payment_transaction_id = payment_transaction_pool.search([('provider_reference', '=', transaction_ID)], limit=1)
+        payment_transaction_id = payment_transaction_pool.search([('provider_reference', '=', transaction_ID),
+            ('amount', '=', amount)], limit=1)
         if payment_transaction_id:
             payment_transaction_id.write({'payment_transactions_batch_id': batch_id.id})
             return True
