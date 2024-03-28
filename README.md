@@ -12,6 +12,8 @@
   * *TODO: Configure to use in Production*
 * `legere_sales`
 * `legere_sales_commission`
+  * Partially done
+  * Started but commission structure wasn't finalized yet
 * `legere_stock`
 
 #### Not Installed
