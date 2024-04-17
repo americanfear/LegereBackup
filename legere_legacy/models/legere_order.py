@@ -56,7 +56,7 @@ class LegereOrder(models.Model):
     DoctorName = fields.Char(string='Doctor Name')
     DoctorType = fields.Char(string='Doctor Type')
     LegereUserId = fields.Integer(string='Legere UserId')
-    OrderUID = fields.Integer(string='OrderUID')
+    OrderUID = fields.Char(string='OrderUID')
     Subtotal = fields.Float(string='Subtotal')
     PhoneNumber = fields.Char(string='Phone Number')
     Territory = fields.Integer(string='Territory')
