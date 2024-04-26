@@ -121,7 +121,8 @@ class AccountBatchPayment(models.Model):
         batch.append("220")  # Service Class Code (credits only)
         batch.append("{:16.16}".format(self.journal_id.company_id.name))  # Company Name
         # Start CUSTOM: Added support for Company Discretionary Data (optional) used by Chase
-        batch.append("{:20.20}".format(self.journal_id.legere_nacha_discretionary_data or ""))  # Company Discretionary Data (optional)
+        disc_data = self.journal_id.legere_nacha_discretionary_data
+        batch.append("{:20.20}".format(disc_data.zfill(20) if disc_data else ""))  # Company Discretionary Data (optional)
         # End CUSTOM
         batch.append("{:0>10.10}".format(self.journal_id.nacha_company_identification))  # Company Identification
         batch.append("PPD")  # Standard Entry Class Code
