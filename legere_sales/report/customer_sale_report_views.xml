@@ -31,10 +31,25 @@
             </field>
         </record>
 
+        <record id="customer_sale_report_pivot_view" model="ir.ui.view">
+            <field name="name">customer.sale.report.pivot</field>
+            <field name="model">customer.sale.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Sales Analysis">
+                    <field name="product" type="row"/>
+                    <field name="last_order_date" type="col"/>
+                    <field name="last_order_qty"/>
+                    <field name="last_order_price"/>
+                    <field name="total_order_qty"/>
+                    <field name="total_order_price"/>
+                </pivot>
+            </field>
+        </record>
+
         <record id="action_customer_sale_report" model="ir.actions.act_window">
             <field name="name">Sales Analysis</field>
             <field name="res_model">customer.sale.report</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,form,pivot</field>
         </record>
     </data>
 </odoo>

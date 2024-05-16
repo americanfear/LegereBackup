@@ -231,6 +231,13 @@ class SaleOrderLine(models.Model):
     discount = fields.Float(string="Discount (%)", compute='_compute_discount', digits='Discount', store=True, readonly=False, precompute=True)
     date_order = fields.Datetime(related='order_id.date_order', string='Order Date', store=True)
 
+    def write(self, vals):
+        if 'product_uom_qty' in vals and self.order_id and self.order_id.state == 'sale':
+            if vals['product_uom_qty'] == 0:
+                self.order_id.mrp_production_ids.action_cancel()
+                self.order_id.tasks_ids.write({'active': False})
+        return super(SaleOrderLine, self).write(vals)
+
     @api.depends('product_id', 'product_uom', 'product_uom_qty', 'discount_amount', 'price_unit')
     def _compute_discount(self):
         for line in self:
