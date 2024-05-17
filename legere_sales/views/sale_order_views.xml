@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <record model="ir.ui.view" id="view_order_form">
+    <record model="ir.ui.view" id="view_order_form">
             <field name="name">sale.order.form</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form" />
@@ -65,5 +64,17 @@
                 </xpath>
             </field>
         </record>
-    </data>
+    <record id="action_new_product_lines" model="ir.actions.act_window">
+        <field name="name">New Product Lines</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_new_product', '=', True)]</field>
+    </record>
+    <menuitem
+        id="new_products_lines"
+        parent="sale.sale_order_menu"
+        name="New Product Lines"
+        sequence="20"
+        action="legere_sales.action_new_product_lines"
+    />
 </odoo>
