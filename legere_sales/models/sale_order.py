@@ -144,7 +144,7 @@ class SaleOrder(models.Model):
 
                         # if template and invoice.partner_id.email and not invoice.invoice_payment_term_id and invoice.amount_residual == 0.0:
                         #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
-                        
+
                         if not invoice.invoice_payment_term_id and invoice.amount_residual > 0.0:
                             self.env['mail.activity'].create({
                                 'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
@@ -196,9 +196,9 @@ class SaleOrder(models.Model):
         for record in self:
             if record.license_partner_id and record.license_expired and not self.env.context.get('skip_license_expired_check'):
                 return record.raise_warning(warning_type='license_expired')
-            record.action_confirm()                        
-             
-    
+            record.action_confirm()
+
+
     def raise_warning(self, warning_type=None):
         view = self.env.ref('legere_sales.view_sale_order_check_confirm_fingerprint_wizard')
         wiz = self.env['sale.order.check.confirm.wizard'].create({'sale_order_id': self.id,
@@ -234,7 +234,7 @@ class SaleOrderLine(models.Model):
     def write(self, vals):
         if 'product_uom_qty' in vals and self.order_id and self.order_id.state == 'sale':
             if vals['product_uom_qty'] == 0:
-                self.order_id.mrp_production_ids.action_cancel()
+                self.order_id.mrp_production_ids.filtered(lambda m:m.product_id.id == self.product_id.id).action_cancel()
                 self.order_id.tasks_ids.write({'active': False})
         return super(SaleOrderLine, self).write(vals)
 

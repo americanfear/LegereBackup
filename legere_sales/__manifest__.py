@@ -1,6 +1,6 @@
 {
     'name': 'Legere Sales',
-    'version': '1.0.4',
+    'version': '1.0.5',
     'category': 'Sales/Sales',
     'summary': """customization related to sales module""",
     'description': """
@@ -11,7 +11,7 @@
     'website': "https://DreamMtn.Services",
     'support': 'support@DreamMtn.Services',
     
-    'depends': ['sale_management', 'sale_project', 'sale_stock', 'sale_mrp', 'purchase_stock', 'stock_dropshipping', 'base_automation', 'legere_legacy'],
+    'depends': ['sale_management', 'sale_project', 'sale_stock', 'sale_mrp', 'purchase_stock', 'stock_dropshipping', 'base_automation', 'legere_legacy', 'legere_sales_commission'],
     'data': [
         'security/ir.model.access.csv',
         'data/data.xml',
