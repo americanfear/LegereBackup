@@ -18,12 +18,14 @@ class ResPartner(models.Model):
                 last_sale_order_line = sale_order_line_pool.search([('order_partner_id', 'in', all_partners.ids), 
                     ('state', 'in', ['sale', 'done']),
                     ('product_id', '=', product.id)], order='date_order desc, id desc', limit=1)
+                all_order_lines = sale_order_line_pool.search([('order_id', '=', last_sale_order_line.order_id.id),
+                    ('product_id', '=', product.id)])
                 report_lines.append(
                     (0, 0, {'partner_id': record.id,
                             'product': product.display_name,
                             'last_order_date': last_sale_order_line.order_id.date_order.date(),
-                            'last_order_qty': last_sale_order_line.product_uom_qty,
-                            'last_order_price': last_sale_order_line.price_unit,
+                            'last_order_qty': sum(all_order_lines.mapped('product_uom_qty')),
+                            'last_order_price': max(all_order_lines.mapped('price_unit')),
                             'total_order_qty': sum(sale_order_lines.filtered(lambda x: x.product_id == product).mapped('product_uom_qty')),
                             'total_order_price': sum(sale_order_lines.filtered(lambda x: x.product_id == product).mapped('price_unit')),
                             })
