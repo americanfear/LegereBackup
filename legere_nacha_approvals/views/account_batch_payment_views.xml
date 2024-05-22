@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <odoo>
+<!-- TODO: DELETE FILE   -->
     <record id="view_batch_payment_form" model="ir.ui.view">
         <field name="name">account.batch.payment.form</field>
         <field name="inherit_id" ref="account_batch_payment.view_batch_payment_form"/>

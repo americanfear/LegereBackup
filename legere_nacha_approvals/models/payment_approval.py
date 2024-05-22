@@ -1,5 +1,5 @@
 from odoo import fields, models, api
-
+# TODO: DELETE FILE
 class PaymentApprovalTemplate(models.Model):
     _inherit = "payment.approval.template"
 

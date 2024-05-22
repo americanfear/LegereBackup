@@ -11,8 +11,13 @@
     
     "depends": ["stride_billpay", "l10n_us_payment_nacha"],
     'data': [
+        'security/ir.model.access.csv',
         'data/mail_template_data.xml',
-        'views/account_batch_payment_views.xml'
+        'views/account_batch_payment_views.xml',
+        'views/account_journal_views.xml',
+        'views/account_payment_views.xml',
+        'views/account_move_views.xml',
+        'views/account_approver_views.xml',
     ],
     'application': True,
     'installable': True,
