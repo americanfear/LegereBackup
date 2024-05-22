@@ -129,3 +129,6 @@ dmypy.json
 
 #don't save backups if used
 backups/*
+
+# IDE config
+.idea/
