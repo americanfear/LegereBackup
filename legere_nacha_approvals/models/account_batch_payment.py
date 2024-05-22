@@ -113,25 +113,3 @@ class AccountBatchPayment(models.Model):
             template = self.env.ref('legere_nacha_approvals.email_template_batch_payment_request_for_approval', raise_if_not_found=False)
             if template:
                 template.send_mail(self.id)
-
-    # CUSTOM: Copied and updated from /l10n_us_payment_nacha/models/account_batch_payment.py
-    def _generate_nacha_batch_header_record(self, payment, batch_nr):
-        batch = []
-        batch.append("5")  # Record Type Code
-        batch.append("220")  # Service Class Code (credits only)
-        batch.append("{:16.16}".format(self.journal_id.company_id.name))  # Company Name
-        # Start CUSTOM: Added support for Company Discretionary Data (optional) used by Chase
-        disc_data = self.journal_id.legere_nacha_discretionary_data
-        batch.append("{:20.20}".format(disc_data.zfill(20) if disc_data else ""))  # Company Discretionary Data (optional)
-        # End CUSTOM
-        batch.append("{:0>10.10}".format(self.journal_id.nacha_company_identification))  # Company Identification
-        batch.append("PPD")  # Standard Entry Class Code
-        batch.append("{:10.10}".format(payment.ref))  # Company Entry Description
-        batch.append("{:6.6}".format(payment.date.strftime("%y%m%d")))  # Company Descriptive Date
-        batch.append("{:6.6}".format(payment.date.strftime("%y%m%d")))  # Effective Entry Date
-        batch.append("{:3.3}".format(""))  # Settlement Date (Julian)
-        batch.append("1")  # Originator Status Code
-        batch.append("{:8.8}".format(self.journal_id.nacha_origination_dfi_identification))  # Originating DFI Identification
-        batch.append("{:07d}".format(batch_nr))  # Batch Number
-
-        return "".join(batch)

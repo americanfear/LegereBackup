@@ -226,7 +226,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
-    dummy_price_unit = fields.Float(string="Unit  Price", related='price_unit', readonly=True)
+    dummy_price_unit = fields.Float(string="Unit Price", related='price_unit', readonly=True)
     discount_amount = fields.Float(string='Discount Amount')
     discount = fields.Float(string="Discount (%)", compute='_compute_discount', digits='Discount', store=True, readonly=False, precompute=True)
     date_order = fields.Datetime(related='order_id.date_order', string='Order Date', store=True)
