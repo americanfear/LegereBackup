@@ -1,6 +1,6 @@
 {
     'name': 'Legere NACHA Approvals',
-    'version': '1.0',
+    'version': '1.1',
     "category": "Accounting/Accounting",
     'summary': """Implemented Approval Flow for NACHA Payments""",
     'description': """Implemented Approval Flow for NACHA Payments""",
@@ -9,13 +9,11 @@
     'website': "https://DreamMtn.Services",
     'support': 'support@DreamMtn.Services',
     
-    "depends": ["stride_billpay", "l10n_us_payment_nacha"],
+    "depends": ["l10n_us_payment_nacha"],
     'data': [
         'security/ir.model.access.csv',
         'data/mail_template_data.xml',
-        'views/account_batch_payment_views.xml',
         'views/account_journal_views.xml',
-        'views/account_payment_views.xml',
         'views/account_move_views.xml',
         'views/account_approver_views.xml',
     ],
