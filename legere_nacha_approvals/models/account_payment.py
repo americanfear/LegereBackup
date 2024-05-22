@@ -3,7 +3,7 @@ from odoo.exceptions import UserError
 # import logging
 # _logger = logging.getLogger(__name__)
 
-
+# TODO: DELETE FILE
 class AccountPayment(models.Model):
     _inherit = "account.payment"
 

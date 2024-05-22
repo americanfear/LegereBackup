@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- TODO: DELETE FILE -->
         <record id="view_account_journal_form_inherit_legere_nacha_approvals" model="ir.ui.view">
             <field name="name">account.payment.form.inherit.legere_nacha_approvals</field>
             <field name="model">account.payment</field>

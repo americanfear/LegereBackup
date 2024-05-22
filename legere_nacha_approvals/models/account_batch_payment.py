@@ -3,7 +3,7 @@ from odoo.exceptions import ValidationError
 
 import base64
 import math
-
+# TODO: DELETE FILE
 class AccountBatchPayment(models.Model):
     _inherit = 'account.batch.payment'
 

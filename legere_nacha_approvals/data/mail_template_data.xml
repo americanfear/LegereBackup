@@ -1,6 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<!--    <data>-->
     <data noupdate="1">
+        <record id="email_template_account_approval_request" model="mail.template">
+            <field name="name">Account Approval: Request for approval of Bill Payment</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Request for bill payment approval</field>
+            <field name="email_from">{{(object.user_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.next_approval_id.name.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear <t t-out="object.next_approval_id.name.partner_id.name"/>,
+                        <br/><br/>
+                        You are requested to approve a payment for
+                        <span style="font-weight: bold;"  t-out="format_amount(object.amount_total, object.currency_id) or ''">$ 10.00</span>.
+                        <br/><br/>
+                        <p>
+                            <a t-att-href="'/mail/view?model=%s&amp;res_id=%s' % (object._name, object.id)"
+                            style="background-color:#875A7B;padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                            View Payment
+                            </a>
+                        </p>
+                        <br/><br/>
+                        Thanks
+                        <br/>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.next_approval_id.name.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="email_template_account_approval_request_approved" model="mail.template">
+            <field name="name">Account Approval: Bill Payment Approved</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Bill payment was approved</field>
+            <field name="email_from">{{(object.user_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.create_uid.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <p>
+                    Dear <t t-esc="object.create_uid.name"/>,
+                </p>
+                <p>
+                    Payment of <strong><t t-esc="object.name"/></strong> for
+                    <strong><t t-esc="object.amount_total"/></strong> is approved.
+                </p>
+                <p>
+                    <a t-att-href="'/mail/view?model=%s&amp;res_id=%s' % (object._name, object.id)">
+                        View Batch Payment
+                    </a>
+                </p>
+            </field>
+        </record>
+
+        <!-- TODO: DELETE REST OF FILE -->
+        <!-- Payment Approval Version  -->
         <record id="email_template_payment_request_for_approval" model="mail.template">
             <field name="name">Payment: Request for approval</field>
             <field name="model_id" ref="account_payment.model_account_payment"/>
