@@ -7,9 +7,12 @@
 * `legere_legacy`
 * `legere_mrp`
 * `legere_nacha_approvals`
-  * Add approval process to batch payments (i.e., download NACHA file)
-  * Extends `stride_billpay`
-  * *TODO: Configure to use in Production*
+  * New (after 5/22/24):
+    * Implements Vendor Bill approval process (i.e., before a Bill is posted and any type of payment can be attached to it)
+    * Does not extend `stride_billpay`
+  * Previously (before 5/22/24):
+    * Partially implemented a batch payment approval process (i.e., download NACHA file)
+    * Extends `stride_billpay`
 * `legere_sales`
 * `legere_sales_commission`
   * Partially done
