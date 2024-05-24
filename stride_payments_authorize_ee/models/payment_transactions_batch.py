@@ -17,8 +17,12 @@ class PaymentTransactionsBatch(models.Model):
         try:
             payment_transactions_batch_pool = self.env['payment.transactions.batch']
             payment_transaction_pool = self.env['payment.transaction']
-            from_date = fields.Date.today() - relativedelta(days=3) #requesting a few days back for redundancy, in case a cron fails or they post late)
-            to_date = fields.Date.today()
+            
+            from_days = self.env.context.get('from_days') or 3
+            to_days = self.env.context.get('to_days') or 0
+            
+            from_date = fields.Date.today() - relativedelta(days=from_days) #requesting a few days back for redundancy, in case a cron fails or they post late)
+            to_date = fields.Date.today() - relativedelta(days=to_days)
 
             if record.state == 'enabled':
                 url = 'https://api.authorize.net/xml/v1/request.api'
