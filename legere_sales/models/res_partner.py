@@ -11,7 +11,9 @@ class ResPartner(models.Model):
             record.customer_sale_report_ids = False
             all_partners = self.with_context(active_test=False).search([('id', 'child_of', record.ids)])
             #Odoo sales orders
-            sale_order_lines = sale_order_line_pool.search([('order_partner_id', 'in', all_partners.ids), ('state', 'in', ['sale', 'done'])])
+            sale_order_lines = sale_order_line_pool.search([('product_id', '!=', False),
+                ('order_partner_id', 'in', all_partners.ids), 
+                ('state', 'in', ['sale', 'done'])])
             products = sale_order_lines.mapped('product_id')
             report_lines = []
             for product in products:
@@ -51,12 +53,54 @@ class ResPartner(models.Model):
                         )
             record.customer_sale_report_ids = report_lines
 
+    @api.depends('sale_order_ids', 'sale_order_ids.state', 'sale_order_ids.partner_id', 'sale_order_ids.order_line')
+    def _compute_customer_sale_report_line(self):
+        legere_order_part_pool = self.env['legere.order.part']
+        sale_order_line_pool = self.env['sale.order.line']
+        for record in self:
+            record.customer_sale_report_line_ids = False
+            all_partners = self.with_context(active_test=False).search([('id', 'child_of', record.ids)])
+            #Odoo sales orders
+            sale_order_lines = sale_order_line_pool.search([('product_id', '!=', False),
+                ('order_partner_id', 'in', all_partners.ids), 
+                ('state', 'in', ['sale', 'done'])])
+            report_lines = []
+            for order_line in sale_order_lines:
+                report_lines.append(
+                    (0, 0, {'partner_id': record.id,
+                            'order_number': order_line.order_id.name,
+                            'order_date': order_line.order_id.date_order,
+                            'product': order_line.product_id.display_name,
+                            'uom_id': order_line.product_uom.id,
+                            'order_qty': order_line.product_uom_qty,
+                            'unit_price': order_line.price_unit,
+                            'total_price': order_line.price_subtotal,
+                            })
+                        )
+            #Legere sales orders
+            all_partners = self.with_context(active_test=False).search([('id', 'child_of', record.ids)]).mapped('legere_customer_ID')
+            legere_order_lines = legere_order_part_pool.search([('OrderID.LegereCustomerNumber', 'in', all_partners)])
+            for order_line in legere_order_lines:
+                report_lines.append(
+                    (0, 0, {'partner_id': record.id,
+                            'order_number': order_line.OrderID.OrderNumber,
+                            'order_date': order_line.DateOrderEntered,
+                            'product': order_line.ProductNumber,
+                            'uom_id': False,
+                            'order_qty': order_line.QtyOrdered,
+                            'unit_price': order_line.UnitPrice,
+                            'total_price': order_line.Total,
+                            })
+                        )
+        record.customer_sale_report_line_ids = report_lines
+
     licensed = fields.Boolean(string='Is Licensed')
     license_number = fields.Char(string='License Number')
     NPI_number = fields.Char(string='NPI Number')
     license_expiration_date = fields.Date(string='License Expiration Date')
     olympia_login = fields.Char(string='Olympia Login')
     customer_sale_report_ids = fields.One2many('customer.sale.report', 'partner_id', string='Customer Sale Report', compute='_compute_customer_sale_report', store=True, compute_sudo=True)
+    customer_sale_report_line_ids = fields.One2many('customer.sale.report.line', 'partner_id', string='Customer Sale Report Lines', compute='_compute_customer_sale_report_line', store=True, compute_sudo=True)
 
     def action_view_customer_sale_report(self):
         self._compute_customer_sale_report()
