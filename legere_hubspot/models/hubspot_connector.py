@@ -59,7 +59,7 @@ class HubspotLog(models.Model):
                     elif data.get('propertyName') == 'city':
                         contact.write({'city': data.get('propertyValue')})
                         updated = True
-                    elif data.get('propertyName') == 'state':
+                    elif data.get('propertyName') == 'state_dd':
                         state_id = state_pool.search([('name', '=', data.get('propertyValue'))], limit=1)
                         if state_id:
                             contact.write({'state_id': state_id.id})
