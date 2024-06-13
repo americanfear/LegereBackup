@@ -68,7 +68,7 @@ class Hubspot(http.Controller):
                         elif data.get('propertyName') == 'city':
                             contact.write({'city': data.get('propertyValue')})
                             updated = True
-                        elif data.get('propertyName') == 'state':
+                        elif data.get('propertyName') == 'state_dd':
                             state_id = state_pool.search([('name', '=', data.get('propertyValue'))], limit=1)
                             if state_id:
                                 contact.write({'state_id': state_id.id})
@@ -84,7 +84,7 @@ class Hubspot(http.Controller):
                         'is_updated': True,
                         'record_id': contact.id,
                     })
-                elif not updated and data.get('propertyName') in ['firstname', 'lastname', 'email', 'phone', 'jobtitle', 'mobilephone', 'website', 'address', 'zip', 'city', 'state', 'country']:
+                elif not updated and data.get('propertyName') in ['firstname', 'lastname', 'email', 'phone', 'jobtitle', 'mobilephone', 'website', 'address', 'zip', 'city', 'state_dd', 'country']:
                     hubspot_log_pool.create({
                         'data': data,
                         'is_updated': False
@@ -96,4 +96,3 @@ class Hubspot(http.Controller):
                 })
         hubspot_log_pool.search([('is_updated', '=', False)]).update_contact()
         return "Received HubSpot data successfully"
-
