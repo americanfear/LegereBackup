@@ -55,7 +55,7 @@ class SaleOrder(models.Model):
                         olympia_product_orderlines = record.order_line.filtered(lambda x: x.product_id and x.product_id.categ_id.olympia_product)
                         sale_advance_payment = self.env['sale.advance.payment.inv'].sudo().create({
                             'advance_payment_method': 'delivered',
-                            'sale_order_ids': [(6,0, [record.id])],
+                            'sale_order_ids': [(6, 0, [record.id])],
                             'deduct_down_payments': True
                         })
                         invoice = sale_advance_payment._create_invoices(record)
@@ -63,6 +63,7 @@ class SaleOrder(models.Model):
                             invoice.fiscal_position_id = invoice.company_id.olympia_fiscal_id.id if invoice.company_id.olympia_fiscal_id else False,
                         invoice.action_post()
 
+                        # For Olympia orders
                         if olympia_product_orderlines:
                             journal_id = account_journal_pool.search([('type', '=', 'general'),
                                 ('company_id', '=', invoice.company_id.id)], limit=1)
@@ -71,6 +72,7 @@ class SaleOrder(models.Model):
                                 ('account_type', 'in', ('asset_receivable', 'liability_payable')),
                                 ('reconciled', '=', False),
                             ]
+                            # If any PO
                             if record.purchase_order_count > 0:
                                 purchase_order = record._get_purchase_orders()
 
@@ -78,6 +80,7 @@ class SaleOrder(models.Model):
                                 purchase_invoice = purchase_order.invoice_ids
                                 purchase_invoice.write({'ref': purchase_order.partner_ref or purchase_order.name, 'invoice_date': fields.Date.today()})
                                 purchase_invoice.action_post()
+                                # Create Bills for POs
                                 if purchase_invoice.company_id.auto_invoice_clearing_account_id:
                                     purchase_move = account_move_pool.create({
                                         'date': fields.Date.today(),
@@ -108,6 +111,7 @@ class SaleOrder(models.Model):
                                             .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
                                             .sudo().reconcile()
 
+                            # Mark invoice as paid (as was paid through ecommerce app)
                             if invoice.company_id.auto_invoice_clearing_account_id:
                                 sale_move = account_move_pool.create({
                                     'date': fields.Date.today(),
@@ -133,6 +137,7 @@ class SaleOrder(models.Model):
 
                                 sale_move_lines = sale_move.sudo().line_ids.filtered_domain(domain)
                                 lines = invoice.sudo().line_ids
+                                # Mark each on Invoice line as reconciled
                                 for account in sale_move_lines.account_id:
                                     (sale_move_lines + lines)\
                                         .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
@@ -145,6 +150,7 @@ class SaleOrder(models.Model):
                         # if template and invoice.partner_id.email and not invoice.invoice_payment_term_id and invoice.amount_residual == 0.0:
                         #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
 
+                        # If no payment terms and there is still an amount owed, create "mail.activity"
                         if not invoice.invoice_payment_term_id and invoice.amount_residual > 0.0:
                             self.env['mail.activity'].create({
                                 'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,

@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+<!--    <data noupdate="1">-->
+        <template id="mail_notification_layout" name="Mail: Legere mail notification layout template">
+<html t-att-lang="lang">
+<head>
+    <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+</head>
+<body style="font-family:Verdana, Arial,sans-serif; color: #454748;">
+<t t-set="subtype_internal" t-value="subtype and subtype.internal"/>
+<!-- HEADER -->
+<t t-call="mail.notification_preview"/>
+<div style="max-width: 900px; width: 100%;">
+<div t-if="has_button_access" itemscope="itemscope" itemtype="http://schema.org/EmailMessage">
+    <div itemprop="potentialAction" itemscope="itemscope" itemtype="http://schema.org/ViewAction">
+        <link itemprop="target" t-att-href="button_access['url']"/>
+        <link itemprop="url" t-att-href="button_access['url']"/>
+        <meta itemprop="name" t-att-content="button_access['title']"/>
+    </div>
+</div>
+<div t-if="subtitles or has_button_access or actions or not is_discussion"
+        summary="o_mail_notification" style="padding: 0px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; margin-top: 5px;">
+        <tbody>
+            <tr>
+                <td valign="center">
+                    <img t-att-src="'/logo.png?company=%s' % (company.id or 0)" style="padding: 0px; margin: 0px; height: auto; max-width: 200px; max-height: 36px;" t-att-alt="'%s' % company.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td valign="center">
+                    <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 10px 0px;"/>
+                </td>
+            </tr>
+<!--            <tr>-->
+<!--                <td valign="center" style="white-space:nowrap;">-->
+<!--                    <table cellspacing="0" cellpadding="0" border="0">-->
+<!--                        <tbody>-->
+<!--                            <tr>-->
+<!--                                <td t-if="has_button_access" t-att-style="'border-radius: 3px; text-align: center; background: ' + (company.secondary_color if company.secondary_color else '#875A7B')">-->
+<!--                                    <a t-att-href="button_access['url']" style="font-size: 12px; color: #FFFFFF; display: block; padding: 8px 12px 11px; text-decoration: none !important; font-weight: 400;">-->
+<!--                                        <t t-out="button_access['title']"/>-->
+<!--                                    </a>-->
+<!--                                </td>-->
+<!--                                <td t-if="has_button_access">&amp;nbsp;&amp;nbsp;</td>-->
+
+<!--                                <td t-if="subtitles" style="font-size: 12px;">-->
+<!--                                     <t t-foreach="subtitles" t-as="subtitle">-->
+<!--                                        <span t-attf-style="{{ 'font-weight:bold;' if subtitle_first else '' }}"-->
+<!--                                              t-out="subtitle"/>-->
+<!--                                        <br t-if="not subtitle_last"/>-->
+<!--                                    </t>-->
+<!--                                </td>-->
+<!--                                <td t-else=""><span style="font-weight:bold;" t-out="record_name"/><br/></td>-->
+<!--                                <td>&amp;nbsp;&amp;nbsp;</td>-->
+
+<!--                                <td t-if="actions">-->
+<!--                                    <t t-foreach="actions" t-as="action">-->
+<!--                                        |-->
+<!--                                        <a t-att-href="action['url']" style="font-size: 12px; color: #875A7B; text-decoration:none !important;">-->
+<!--                                            <t t-out="action['title']"/>-->
+<!--                                        </a>-->
+<!--                                    </t>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td valign="center">-->
+<!--                    <hr width="100%"-->
+<!--                        style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0;margin: 10px 0px;"/>-->
+<!--                    <p t-if="subtype_internal" style="background-color: #f2dede; padding: 5px; margin-bottom: 16px; font-size: 13px;">-->
+<!--                        <strong>Internal communication</strong>: Replying will post an internal note. Followers won't receive any email notification.-->
+<!--                    </p>-->
+<!--                </td>-->
+<!--            </tr>-->
+        </tbody>
+    </table>
+</div>
+<!-- CONTENT -->
+<div t-out="message.body" style="font-size: 13px;"/>
+<ul t-if="tracking_values">
+    <t t-foreach="tracking_values" t-as="tracking">
+        <li><t t-out="tracking[0]"/>: <t t-out="tracking[1]"/> &#8594; <t t-out="tracking[2]"/></li>
+    </t>
+</ul>
+<t class="o_signature">
+    <div t-if="email_add_signature and not is_html_empty(signature)" t-out="signature" style="font-size: 13px;"/>
+</t>
+<!-- FOOTER -->
+<div style="margin-top:32px;">
+    <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 4px 0px;"/>
+    <b t-out="company.name" style="font-size:11px;"/><br/>
+    <p style="color: #999999; margin-top:2px; font-size:11px;">
+        <t t-out="company.phone"/>
+        <t t-if="company.email and company.phone"> |</t>
+        <a t-if="company.email" t-att-href="'mailto:%s' % company.email" style="text-decoration:none; color: #999999;" t-out="company.email"/>
+        <t t-if="company.website and (company.phone or company.email)"> |</t>
+        <a t-if="company.website" t-att-href="'%s' % company.website" style="text-decoration:none; color: #999999;" t-out="company.website"/>
+    </p>
+</div>
+</div>
+</body></html>
+        </template>
+
+
+        <record id="email_template_dropship_order_tracking" model="mail.template">
+            <field name="name">Dropship/Order Fulfillment: Tracking</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="subject">Order shipped and tracking number is ready!</field>
+            <field name="description">Send tracking info on dropship and fulfilled orders</field>
+            <field name="email_from">Billing@legerepharm.com</field>
+            <field name="reply_to">Billing@legerepharm.com</field>
+            <field name="partner_to">{{ object.sale_id.license_partner_id.id or object.sale_id.partner_id.id}}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="box-sizing:border-box;margin: 0px; padding: 0px; font-size: 13px;">
+                        Dear <t t-out="object.sale_id.license_partner_id.name or object.sale_id.partner_id.name or ''">Brandon Freeman</t>,
+                        <br /><br />
+                        Your order (<b>Ref #: <span t-out="object.sale_id.name or ''">S123456</span></b>) has been shipped.
+                        <br /><br />
+                        The tracking number is <b><a t-att-href="object.carrier_tracking_url" t-out="object.carrier_tracking_ref or ''">ABCDEF123456</a></b>.
+                        <br /><br />
+                        Do not hesitate to contact us if you have any questions.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.sale_id.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="mail_template_sale_confirmation" model="mail.template">
+            <field name="name">Sales: Legere Order Confirmation for non-dropship orders</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">{{ object.company_id.name }} {{ (object.get_portal_last_transaction().state == 'pending') and 'Pending Order' or 'Order' }} (Ref {{ object.name or 'n/a' }})</field>
+            <field name="email_from">{{ (object.user_id.email_formatted or object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to" />
+            <field name="partner_to">{{ object.partner_invoice_id.id or object.partner_shipping_id.id or object.partner_id.id }}</field>
+<!--            <field name="email_to">{{ object.partner_invoice_id.email or object.partner_shipping_id.email or object.partner_id.email }}</field>-->
+<!--            <field name="partner_to">{{ object.partner_id.id }}</field>-->
+            <field name="description">Sent to customers on order confirmation for non-dropship orders</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+        Hello,
+        <br/><br/>
+        <t t-set="transaction" t-value="object.get_portal_last_transaction()"/>
+        Your order <span style="font-weight:bold;" t-out="object.name or ''">S00049</span> amounting in <span style="font-weight:bold;" t-out="format_amount(object.amount_total, object.currency_id) or ''">$ 10.00</span>
+        <t t-if="object.state == 'sale' or (transaction and transaction.state in ('done', 'authorized'))">
+            has been confirmed.<br/>
+            Thank you for your trust!
+        </t>
+        <t t-elif="transaction and transaction.state == 'pending'">
+            is pending. It will be confirmed when the payment is received.
+            <t t-if="object.reference">
+                Your payment reference is <span style="font-weight:bold;" t-out="object.reference or ''"></span>.
+            </t>
+        </t>
+        <br/><br/>
+        Do not hesitate to contact us if you have any questions.
+        <t t-if="not is_html_empty(object.user_id.signature)">
+            <br/><br/>
+            <t t-out="object.user_id.signature or ''">--<br/>Mitchell Admin</t>
+        </t>
+        <br/><br/>
+    </p>
+<t t-if="hasattr(object, 'website_id') and object.website_id">
+    <div style="margin: 0px; padding: 0px;">
+        <table width="100%" style="color: #454748; font-size: 12px; border-collapse: collapse;">
+            <tr style="border-bottom: 2px solid #dee2e6;">
+                <td style="width: 150px;"><span style="font-weight:bold;">Products</span></td>
+                <td></td>
+                <td width="15%" align="center"><span style="font-weight:bold;">Quantity</span></td>
+                <td width="20%" align="right"><span style="font-weight:bold;">
+                <t t-if="object.user_id.has_group('account.group_show_line_subtotals_tax_excluded')">
+                    VAT Excl.
+                </t>
+                <t t-else="">
+                    VAT Incl.
+                </t>
+                </span></td>
+            </tr>
+        </table>
+        <t t-foreach="object.order_line" t-as="line">
+            <t t-if="(not hasattr(line, 'is_delivery') or not line.is_delivery) and line.display_type in ['line_section', 'line_note']">
+                <table width="100%" style="color: #454748; font-size: 12px; border-collapse: collapse;">
+                    <t t-set="loop_cycle_number" t-value="loop_cycle_number or 0" />
+                    <tr t-att-style="'background-color: #f2f2f2' if loop_cycle_number % 2 == 0 else 'background-color: #ffffff'">
+                        <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1" />
+                        <td colspan="4">
+                            <t t-if="line.display_type == 'line_section'">
+                                <span style="font-weight:bold;" t-out="line.name or ''">Taking care of Trees Course</span>
+                            </t>
+                            <t t-elif="line.display_type == 'line_note'">
+                                <i t-out="line.name or ''">Taking care of Trees Course</i>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+            </t>
+            <t t-elif="(not hasattr(line, 'is_delivery') or not line.is_delivery)">
+                <table width="100%" style="color: #454748; font-size: 12px; border-collapse: collapse;">
+                    <t t-set="loop_cycle_number" t-value="loop_cycle_number or 0" />
+                    <tr t-att-style="'background-color: #f2f2f2' if loop_cycle_number % 2 == 0 else 'background-color: #ffffff'">
+                        <t t-set="loop_cycle_number" t-value="loop_cycle_number + 1" />
+                        <td style="width: 150px;">
+                            <img t-attf-src="/web/image/product.product/{{ line.product_id.id }}/image_128" style="width: 64px; height: 64px; object-fit: contain;" alt="Product image"></img>
+                        </td>
+                        <td align="left" t-out="line.product_id.name or ''">	Taking care of Trees Course</td>
+                        <td width="15%" align="center" t-out="line.product_uom_qty or ''">1</td>
+                        <td width="20%" align="right"><span style="font-weight:bold;">
+                        <t t-if="object.user_id.has_group('account.group_show_line_subtotals_tax_excluded')">
+                            <t t-out="format_amount(line.price_reduce_taxexcl, object.currency_id) or ''">$ 10.00</t>
+                        </t>
+                        <t t-else="">
+                            <t t-out="format_amount(line.price_reduce_taxinc, object.currency_id) or ''">$ 10.00</t>
+                        </t>
+                        </span></td>
+                    </tr>
+                </table>
+            </t>
+        </t>
+    </div>
+    <div style="margin: 0px; padding: 0px;" t-if="hasattr(object, 'carrier_id') and object.carrier_id">
+        <table width="100%" style="color: #454748; font-size: 12px; border-spacing: 0px 4px;" align="right">
+            <tr>
+                <td style="width: 60%"/>
+                <td style="width: 30%; border-top: 1px solid #dee2e6;" align="right"><span style="font-weight:bold;">Delivery:</span></td>
+                <td style="width: 10%; border-top: 1px solid #dee2e6;" align="right" t-out="format_amount(object.amount_delivery, object.currency_id) or ''">$ 0.00</td>
+            </tr>
+            <tr>
+                <td style="width: 60%"/>
+                <td style="width: 30%;" align="right"><span style="font-weight:bold;">SubTotal:</span></td>
+                <td style="width: 10%;" align="right" t-out="format_amount(object.amount_untaxed, object.currency_id) or ''">$ 10.00</td>
+            </tr>
+        </table>
+    </div>
+    <div style="margin: 0px; padding: 0px;" t-else="">
+        <table width="100%" style="color: #454748; font-size: 12px; border-spacing: 0px 4px;" align="right">
+            <tr>
+                <td style="width: 60%"/>
+                <td style="width: 30%; border-top: 1px solid #dee2e6;" align="right"><span style="font-weight:bold;">SubTotal:</span></td>
+                <td style="width: 10%; border-top: 1px solid #dee2e6;" align="right" t-out="format_amount(object.amount_untaxed, object.currency_id) or ''">$ 10.00</td>
+            </tr>
+        </table>
+    </div>
+    <div style="margin: 0px; padding: 0px;">
+        <table width="100%" style="color: #454748; font-size: 12px; border-spacing: 0px 4px;" align="right">
+            <tr>
+                <td style="width: 60%"/>
+                <td style="width: 30%;" align="right"><span style="font-weight:bold;">Taxes:</span></td>
+                <td style="width: 10%;" align="right" t-out="format_amount(object.amount_tax, object.currency_id) or ''">$ 0.00</td>
+            </tr>
+            <tr>
+                <td style="width: 60%"/>
+                <td style="width: 30%; border-top: 1px solid #dee2e6;" align="right"><span style="font-weight:bold;">Total:</span></td>
+                <td style="width: 10%; border-top: 1px solid #dee2e6;" align="right" t-out="format_amount(object.amount_total, object.currency_id) or ''">$ 10.00</td>
+            </tr>
+        </table>
+    </div>
+    <div t-if="object.partner_invoice_id" style="margin: 0px; padding: 0px;">
+        <table width="100%" style="color: #454748; font-size: 12px;">
+            <tr>
+                <td style="padding-top: 10px;">
+                    <span style="font-weight:bold;">Bill to:</span>
+                    <t t-out="object.partner_invoice_id.street or ''">1201 S Figueroa St</t>
+                    <t t-out="object.partner_invoice_id.city or ''">Los Angeles</t>
+                    <t t-out="object.partner_invoice_id.state_id.name or ''">California</t>
+                    <t t-out="object.partner_invoice_id.zip or ''">90015</t>
+                    <t t-out="object.partner_invoice_id.country_id.name or ''">United States</t>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span style="font-weight:bold;">Payment Method:</span>
+                    <t t-if="transaction.token_id">
+                        <t t-out="transaction.token_id.display_name or ''"></t>
+                    </t>
+                    <t t-else="">
+                        <t t-out="transaction.provider_id.sudo().name or ''"></t>
+                    </t>
+                    (<t t-out="format_amount(transaction.amount, object.currency_id) or ''">$ 10.00</t>)
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div t-if="object.partner_shipping_id and not object.only_services" style="margin: 0px; padding: 0px;">
+        <table width="100%" style="color: #454748; font-size: 12px;">
+            <tr>
+                <td>
+                    <br/>
+                    <span style="font-weight:bold;">Ship to:</span>
+                    <t t-out="object.partner_shipping_id.street or ''">1201 S Figueroa St</t>
+                    <t t-out="object.partner_shipping_id.city or ''">Los Angeles</t>
+                    <t t-out="object.partner_shipping_id.state_id.name or ''">California</t>
+                    <t t-out="object.partner_shipping_id.zip or ''">90015</t>
+                    <t t-out="object.partner_shipping_id.country_id.name or ''">United States</t>
+                </td>
+            </tr>
+        </table>
+        <table t-if="hasattr(object, 'carrier_id') and object.carrier_id" width="100%" style="color: #454748; font-size: 12px;">
+            <tr>
+                <td>
+                    <span style="font-weight:bold;">Shipping Method:</span>
+                    <t t-out="object.carrier_id.name or ''"></t>
+                    <t t-if="object.amount_delivery == 0.0">
+                        (Free)
+                    </t>
+                    <t t-else="">
+                        (<t t-out="format_amount(object.amount_delivery, object.currency_id) or ''">$ 10.00</t>)
+                    </t>
+                </td>
+            </tr>
+            <tr t-if="object.carrier_id.carrier_description">
+                <td>
+                    <strong>Shipping Description:</strong>
+                    <t t-out="object.carrier_id.carrier_description"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</t>
+</div></field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">{{ (object.name or '').replace('/','_') }}</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

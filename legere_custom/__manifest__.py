@@ -15,6 +15,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
+        'data/mail_template_data.xml',
         'wizard/import_po_bill_batch_views.xml',
         'wizard/account_payment_register_views.xml',
         'views/res_config_settings_views.xml',
