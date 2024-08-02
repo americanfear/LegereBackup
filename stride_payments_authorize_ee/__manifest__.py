@@ -1,6 +1,6 @@
 {
     'name': 'Stride: Payment Authorize - Enterprise',
-    'version': '16.0.1.0.1',
+    'version': '16.0.1.0.2',
     'category': 'Accounting/Payment Providers',
     'summary': """stride payment authorize""",
     'description': """stride payment sales authorize""",
