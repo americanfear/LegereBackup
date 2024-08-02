@@ -10,6 +10,12 @@
                     <field name="sale_id" invisible="1"/>
                     <field name="order_notes" attrs="{'invisible': [('sale_id', '=', False)]}"/>
                 </field>
+                <xpath expr="//button[@name='action_cancel']" position="after">
+                    <button name="action_email_tracking_info" attrs="{'invisible': ['|',('state', '!=', 'done'),('carrier_tracking_ref', '==', False)]}"
+                            string="Email Tracking Info" groups="base.group_user" type="object" class="oe_highlight"
+                            confirm="Are you sure you want to email the latest tracking info to the customer?"
+                    />
+                </xpath>
             </field>
         </record>
     </data>

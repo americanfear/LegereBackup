@@ -9,24 +9,23 @@ class StockPicking(models.Model):
 
     order_notes = fields.Text(string='Order Notes', related='sale_id.order_notes')
 
-    def button_validate(self):
-        res = super().button_validate()
+    def action_email_tracking_info(self):
         for record in self:
             if (
                     record.carrier_tracking_ref != False and
-                    (record.sale_id.license_partner_id.email or record.sale_id.partner_id.email) and
+                    (record.sale_id.partner_invoice_id.email or record.sale_id.partner_id.email) and
                     record.picking_type_id.name in ["Dropship", "Delivery Orders"]
             ):
                 try:
                     template = record.env.ref(
-                        'legere_custom.email_template_dropship_order_tracking',
+                        'legere_custom.email_template_order_tracking',
                         raise_if_not_found=False
                     )
                     # _logger.info(f'>>>>>>>VALIDATE EMAIL: id:{record.id}, state:{record.state}, tracking:{record.carrier_tracking_ref}')
                     if template:
                         test_only = False
                         if test_only:
-                            email_to = record.sale_id.license_partner_id.email or record.sale_id.partner_id.email
+                            email_to = record.sale_id.partner_invoice_id.email or record.sale_id.partner_id.email
                             values = template.generate_email(
                                 record.id,
                                 ['subject', 'body_html',
@@ -40,13 +39,19 @@ class StockPicking(models.Model):
                             {values['body_html'] if "body_html" in values else "NO body_html"}
                             """
                             record.message_post(body=body)
-                        else:
-                            template.send_mail(record.id, email_layout_xmlid='legere_custom.mail_notification_layout',
-                                               force_send=True)
+                        # else:
+                        if not test_only:
+                            # template.send_mail(record.id, email_layout_xmlid='legere_custom.mail_notification_layout',
+                            #                    force_send=True)
+                            record.with_context(force_send=True).message_post_with_template(
+                                template.id,
+                                email_layout_xmlid='legere_custom.mail_notification_layout'
+                            )
                         # _logger.info('>>>>>>>VALIDATE SEND EMAIL')
-                        # template.send_mail(record.id, email_layout_xmlid='legere_custom.mail_notification_layout')
-                        # template.send_mail(record.id, email_layout_xmlid='legere_custom.mail_notification_layout', force_send=True)
                 except Exception as e:
-                        _logger.error("%s", str(e))
+                    _logger.error("%s", str(e))
 
+    def button_validate(self):
+        res = super().button_validate()
+        self.action_email_tracking_info()
         return res

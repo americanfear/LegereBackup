@@ -9,6 +9,12 @@
                 <field name="payment_term_id" position="after">
                     <field name="order_notes"/>
                 </field>
+                <xpath expr="//button[@name='action_cancel']" position="after">
+                    <button name="action_email_order_update" attrs="{'invisible': [('state', '!=', 'sale')]}"
+                            string="Email Order Update" groups="base.group_user" type="object" class="oe_highlight"
+                            confirm="Are you sure you want to email the latest order info to the customer?"
+                    />
+                </xpath>
             </field>
         </record>
     </data>
