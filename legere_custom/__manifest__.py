@@ -1,6 +1,6 @@
 {
     'name': 'Legere Custom',
-    'version': '1.0.3',
+    'version': '1.0.4',
     'category': 'Inventory/Inventory',
     'summary': """generic module""",
     'description': """
@@ -11,7 +11,7 @@
     'website': "https://DreamMtn.Services",
     'support': 'support@DreamMtn.Services',
     
-    'depends': ['sale_management', 'sale_stock', 'purchase', 'sale_mrp', 'hr_expense', 'sale_project', 'account'],
+    'depends': ['sale_management', 'sale_stock', 'purchase', 'sale_mrp', 'hr_expense', 'sale_project', 'account', 'crm'],
     'data': [
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',

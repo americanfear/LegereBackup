@@ -235,7 +235,16 @@ class SaleOrderLine(models.Model):
         if 'product_uom_qty' in vals and self.order_id and self.order_id.state == 'sale':
             if vals['product_uom_qty'] == 0:
                 self.order_id.mrp_production_ids.filtered(lambda m:m.product_id.id == self.product_id.id).action_cancel()
-                self.order_id.tasks_ids.write({'active': False})
+                if self.product_id.group_task:
+                    other_lines = self.order_id.order_line.filtered(lambda l: l.product_id.group_task and l.product_id.custom_project_id.id == self.product_id.custom_project_id.id and self.id != l.id and l.product_uom_qty != 0)
+                    _logger.info(other_lines)
+                    # other_lines = self.order_id.order_line.filtered(lambda l: l.product_id.group_task and l.product_id.custom_project_id.id == self.product_id.custom_project_id.id and self.id != l.id and l.product_uom_qty != 0)
+                    if not other_lines:
+                        self.order_id.tasks_ids.write({'active': False})
+                elif self.task_id:
+                    self.task_id.write({'active': False})
+                else:
+                    self.order_id.tasks_ids.write({'active': False})
         return super(SaleOrderLine, self).write(vals)
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty', 'discount_amount', 'price_unit')

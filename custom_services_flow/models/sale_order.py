@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class SaleOrder(models.Model):
@@ -35,7 +35,7 @@ class SaleOrder(models.Model):
                     product_ids = [line.product_id.id]              
                 
                 if not line.product_id.group_task or line.product_id.custom_project_id.name not in projects:
-                    project_task_pool.create({
+                    created_task = project_task_pool.create({
                         'name': task_name,
                         'project_id': line.product_id.custom_project_id.id,
                         'sale_order_id': record.id,
@@ -43,5 +43,6 @@ class SaleOrder(models.Model):
                         'partner_id': record.partner_id.id,
                         'product_ids': [(6, 0, product_ids)] 
                     })
+                    line.write({'task_id': created_task.id})
                     projects.append(line.product_id.custom_project_id.name)
         return res
