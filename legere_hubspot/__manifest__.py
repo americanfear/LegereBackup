@@ -1,6 +1,6 @@
 {
     'name': 'Legere Hubspot',
-    'version': '1.1',
+    'version': '1.2',
     'category': 'Tools',
     'summary': """Integration With Hubspot""",
     'description': """
