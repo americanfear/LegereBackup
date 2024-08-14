@@ -14,6 +14,7 @@
     'depends': ['contacts'],
     'data': [
         'security/ir.model.access.csv',
+        'data/service_cron.xml',
         'views/hubspot_connector_views.xml',
         'views/res_partner_views.xml',
     ],

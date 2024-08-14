@@ -27,7 +27,7 @@ class Hubspot(http.Controller):
                             'hubspot_id': data.get('objectId')
                         })
                         request.cr.commit()
-                        updated = True
+                        updated = True  
                 
                 if data.get('subscriptionType') == 'contact.propertyChange' and data.get('objectId'):
                     contact = contact_pool.search([('hubspot_id', '=', data.get('objectId'))], limit=1)
