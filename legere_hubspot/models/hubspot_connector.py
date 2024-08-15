@@ -7,6 +7,13 @@ class HubspotLog(models.Model):
     _description = 'Hubspot Log'
     _rec_name = 'record_id'
 
+    def _auto_delete_hubspot_log(self):
+        today = fields.Datetime.now()
+        for record in self.search([('id', '!=', False)]):
+            delta = today - record.create_date
+            if delta.days >= 30:
+                record.unlink()
+
     data = fields.Text(string='Data', required=True)
     error = fields.Text(string='Error')
     is_updated = fields.Boolean(string='Created/Updated')

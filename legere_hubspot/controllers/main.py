@@ -15,6 +15,7 @@ class Hubspot(http.Controller):
         country_pool = request.env['res.country'].sudo()
         hubspot_log_pool = request.env['hubspot.log'].sudo()
         _logger.info("=======Hubspot Data======= %s", json.loads(request.httprequest.data.decode('utf-8')))
+        contact = False
         for data in json.loads(request.httprequest.data.decode('utf-8')):
             try:
                 updated = False
@@ -94,5 +95,6 @@ class Hubspot(http.Controller):
                     'data': data,
                     'error': str(e),
                 })
+                return {'odoo_record_id': False, 'error': str(e)}
         hubspot_log_pool.search([('is_updated', '=', False)]).update_contact()
-        return "Received HubSpot data successfully"
+        return {'odoo_record_id': contact and contact.id or False}
