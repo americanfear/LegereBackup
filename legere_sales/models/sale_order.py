@@ -217,7 +217,7 @@ class SaleOrder(models.Model):
         }
 
     def action_view_customer_sale_report(self):
-        self.partner_id._compute_customer_sale_report()
+        self.partner_id.sudo()._compute_customer_sale_report()
         action = self.env['ir.actions.act_window']._for_xml_id('legere_sales.action_customer_sale_report')
         action['domain'] = [('id', 'in', self.partner_id.customer_sale_report_ids.ids)]
         action['context'] = {}

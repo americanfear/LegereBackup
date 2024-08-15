@@ -1,6 +1,6 @@
 {
     'name': 'Legere Hubspot',
-    'version': '1.1',
+    'version': '1.2',
     'category': 'Tools',
     'summary': """Integration With Hubspot""",
     'description': """
@@ -14,6 +14,7 @@
     'depends': ['contacts'],
     'data': [
         'security/ir.model.access.csv',
+        'data/service_cron.xml',
         'views/hubspot_connector_views.xml',
         'views/res_partner_views.xml',
     ],

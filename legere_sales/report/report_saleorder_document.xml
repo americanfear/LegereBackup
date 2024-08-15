@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document" inherit_id="sale.report_saleorder_document">
+        <xpath expr='//div[@id="informations"]' position='inside'>
+            <div t-if="doc.partner_id" class="col-auto col-3 mw-100 mb-2" name="informations_customer_id">
+                <strong>Customer ID:</strong>
+                <p class="m-0" t-field="doc.partner_id.id"/>
+            </div>
+            <div t-if="doc.partner_id.legere_customer_ID" class="col-auto col-3 mw-100 mb-2" name="informations_legere_id">
+                <strong>Legere ID:</strong>
+                <p class="m-0" t-field="doc.partner_id.legere_customer_ID"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
