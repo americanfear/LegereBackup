@@ -103,7 +103,7 @@ class ResPartner(models.Model):
     customer_sale_report_line_ids = fields.One2many('customer.sale.report.line', 'partner_id', string='Customer Sale Report Lines', compute='_compute_customer_sale_report_line', store=True, compute_sudo=True)
 
     def action_view_customer_sale_report(self):
-        self._compute_customer_sale_report()
+        self.sudo()._compute_customer_sale_report()
         action = self.env['ir.actions.act_window']._for_xml_id('legere_sales.action_customer_sale_report')
         action['domain'] = [('id', 'in', self.customer_sale_report_ids.ids)]
         action['context'] = {}
