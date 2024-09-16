@@ -1,6 +1,6 @@
 {
     'name': 'Legere Sales',
-    'version': '1.0.8',
+    'version': '1.0.9',
     'category': 'Sales/Sales',
     'summary': """customization related to sales module""",
     'description': """
@@ -20,6 +20,7 @@
         'views/sale_order_views.xml',
         'views/project_task_views.xml',
         'views/res_config_setting_views.xml',
+        'views/stock_picking_views.xml',
         'wizard/check_and_confirm_views.xml',
         'report/customer_sale_report_views.xml',
         'report/report_saleorder_document.xml',

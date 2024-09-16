@@ -1,69 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record model="ir.ui.view" id="view_order_form">
-            <field name="name">sale.order.form</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form" />
-            <field name="arch" type="xml">
-                <div class="oe_button_box" name="button_box" position="inside">
-                    <button name="action_view_customer_sale_report" type="object"
-                        class="oe_stat_button" icon="fa-file-text-o" groups="sales_team.group_sale_salesman">
-                        <div class="o_stat_info">
-                            <span class="o_stat_text">Sales Analysis</span>
-                        </div>
-                    </button>
-                </div>
-                <div class="oe_button_box" name="button_box" position="after">
-                    <div class="row mt16 o_settings_container" attrs="{'invisible': [('license_expired', '=', False)]}">
-                        <p class="alert alert-warning" role="alert"> Selected license is expired.</p>
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="payment_status"/>
+            </xpath>
+            <xpath expr="//sheet//div[hasclass('oe_button_box')]" position="after">
+                <widget name="web_ribbon" title="Not Paid"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('payment_status', '!=', 'Not Paid')]}"/>
+                <widget name="web_ribbon" title="Paid"
+                        bg_color="bg-success"
+                        attrs="{'invisible': [('payment_status', '!=', 'Paid')]}"/>
+                <widget name="web_ribbon" title="Partially Paid"
+                        bg_color="bg-warning"
+                        attrs="{'invisible': [('payment_status', '!=', 'Partially Paid')]}"/>
+                <widget name="web_ribbon" title="In Payment"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('payment_status', '!=', 'In Payment')]}"/>
+                <widget name="web_ribbon" title="Reversed"
+                        bg_color="bg-success"
+                        attrs="{'invisible': [('payment_status', '!=', 'Reversed')]}"/>
+            </xpath>
+
+            <div class="oe_button_box" name="button_box" position="inside">
+                <button name="action_view_customer_sale_report" type="object"
+                    class="oe_stat_button" icon="fa-file-text-o" groups="sales_team.group_sale_salesman">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Sales Analysis</span>
                     </div>
+                </button>
+            </div>
+            <div class="oe_button_box" name="button_box" position="after">
+                <div class="row mt16 o_settings_container" attrs="{'invisible': [('license_expired', '=', False)]}">
+                    <p class="alert alert-warning" role="alert"> Selected license is expired.</p>
                 </div>
-                <field name="partner_shipping_id" position="after">
-                    <field name="license_partner_id" attrs="{'invisible': [('license_required', '=', False)], 'required': [('license_required', '!=', False)]}"/>
-                    <field name="license_required" invisible="1"/>
-                    <field name="license_expired" invisible="1"/>
-                    <field name="allowed_change_unit_price" invisible="1"/>
-                    <field name="price_change_approved" invisible="1"/>
-                </field>
-
-                <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="after">
-                    <field name="dummy_price_unit" attrs="{'column_invisible': [('parent.allowed_change_unit_price', '!=', False)]}"/>
-                </xpath>
-                <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('qty_invoiced', '&gt;', 0)], 'column_invisible': [('parent.allowed_change_unit_price', '=', False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="before">
-                    <field name="discount_amount" groups="product.group_discount_per_so_line" optional="show"/>
-                </xpath>
-
-                <field name="payment_term_id" position="after">
-                    <field name="customer_current_limit"/>
-                </field>
-
-                <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
-                    <attribute name='invisible'>1</attribute>
-                </xpath>
-                <xpath expr="//button[@name='action_confirm'][1]" position="after">
-                    <button name="action_confirm_check" id="action_confirm_check_primary"
-                        string="Check and Confirm" class="btn-primary" type="object"
-                        attrs="{'invisible': [('state', 'not in', ['sent'])]}"/>
-                </xpath>
-                <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
-                    <attribute name='invisible'>1</attribute>
-                </xpath>
-                <xpath expr="//button[@name='action_confirm'][2]" position="after">
-                    <button name="action_confirm_check" id="action_confirm_check_secondary"
-                        string="Check and Confirm" type="object"
-                        attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
-                </xpath>
-                <xpath expr="//button[@name='action_draft']" position="after">
-                    <button name="action_approve_price_change" type="object" string="Approve Price Change" attrs="{'invisible': [('price_change_approved', '!=', False)]}" class="btn btn-secondary" groups="sales_team.group_sale_manager"/>
-                </xpath>
-                <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="domain">[('is_company', '=', True)]</attribute>
-                </xpath>
+            </div>
+            <field name="partner_shipping_id" position="after">
+                <field name="license_partner_id" attrs="{'invisible': [('license_required', '=', False)], 'required': [('license_required', '!=', False)]}"/>
+                <field name="license_required" invisible="1"/>
+                <field name="license_expired" invisible="1"/>
+                <field name="allowed_change_unit_price" invisible="1"/>
+                <field name="price_change_approved" invisible="1"/>
             </field>
-        </record>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="after">
+                <field name="dummy_price_unit" attrs="{'column_invisible': [('parent.allowed_change_unit_price', '!=', False)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="attributes">
+                <attribute name="attrs">{'readonly': [('qty_invoiced', '&gt;', 0)], 'column_invisible': [('parent.allowed_change_unit_price', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="before">
+                <field name="discount_amount" groups="product.group_discount_per_so_line" optional="show"/>
+            </xpath>
+
+            <field name="payment_term_id" position="after">
+                <field name="customer_current_limit"/>
+            </field>
+
+            <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                <attribute name='invisible'>1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][1]" position="after">
+                <button name="action_confirm_check" id="action_confirm_check_primary"
+                    string="Check and Confirm" class="btn-primary" type="object"
+                    attrs="{'invisible': [('state', 'not in', ['sent'])]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name='invisible'>1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][2]" position="after">
+                <button name="action_confirm_check" id="action_confirm_check_secondary"
+                    string="Check and Confirm" type="object"
+                    attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_draft']" position="after">
+                <button name="action_approve_price_change" type="object" string="Approve Price Change" attrs="{'invisible': [('price_change_approved', '!=', False)]}" class="btn btn-secondary" groups="sales_team.group_sale_manager"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="domain">[('is_company', '=', True)]</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_quotation_tree_with_onboarding" model="ir.ui.view">
+        <field name="name">sale.order.view.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="payment_status" optional="show"
+                       decoration-success="payment_status in ['Paid', 'Reversed']"
+                       decoration-danger="payment_status == 'Not Paid'"
+                       decoration-info="payment_status == 'In Payment'"
+                       decoration-bf="payment_status == 'No invoice'"
+                       decoration-warning="payment_status == 'Partially Paid'"
+                       widget="badge"/>
+            </xpath>
+        </field>
+    </record>
+    
     <record id="sale_order_view_search_inherit" model="ir.ui.view">
         <field name="name">sale.order.search.inherit</field>
         <field name="model">sale.order</field>
@@ -76,6 +115,7 @@
             </filter>
         </field>
     </record>
+    
     <record id="action_new_product_lines" model="ir.actions.act_window">
         <field name="name">New Product Lines</field>
         <field name="res_model">sale.order.line</field>
