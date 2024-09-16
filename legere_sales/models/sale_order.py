@@ -25,6 +25,47 @@ class AccountPaymentRegister(models.TransientModel):
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    @api.depends('invoice_ids')
+    def _compute_payment_status(self):
+        for record in self:
+            record.payment_status = 'No invoice'
+            payment_states = record.invoice_ids.mapped('payment_state')
+            status_length = len(payment_states)
+            if 'partial' in payment_states:
+                record.payment_status = 'Partially Paid'
+            elif 'not_paid' in payment_states and any(
+                    (True for x in ['paid', 'in_payment', 'partial'] if
+                     x in payment_states)):
+                record.payment_status = 'Partially Paid'
+            elif 'not_paid' in payment_states and status_length == \
+                    payment_states.count('not_paid'):
+                record.payment_status = 'Not Paid'
+            elif 'paid' in payment_states and status_length == \
+                    payment_states.count('paid') and record.amount_due == 0:
+                record.payment_status = 'Paid'
+            elif 'paid' in payment_states and status_length == \
+                    payment_states.count('paid') and record.amount_due != 0:
+                record.payment_status = 'Partially Paid'
+            elif 'in_payment' in payment_states and status_length == \
+                    payment_states.count('in_payment'):
+                record.payment_status = 'Paid'
+            elif 'reversed' in payment_states and status_length == \
+                    payment_states.count('reversed'):
+                record.payment_status = 'Reversed'
+            else:
+                record.payment_status = 'No invoice'
+
+    @api.depends('invoice_ids')
+    def _compute_amount_due(self):
+        for record in self:
+            amount_due = 0
+            for invoice in record.invoice_ids:
+                amount_due = amount_due + (invoice.amount_total - invoice.amount_residual)
+            record.amount_due = record.amount_total - amount_due
+
+    payment_status = fields.Char(string="Payment Status", compute="_compute_payment_status")
+    amount_due = fields.Float(string="Amount Due", compute='_compute_amount_due')
+
     @api.model
     def create_base_automation_auto_create_sale_invoice(self):
         base_automation_pool = self.env['base.automation']
