@@ -190,12 +190,12 @@ class SaleOrder(models.Model):
                                         .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
                                         .sudo().reconcile()
 
-                        # template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
+                        template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
                         # if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.amount_residual != 0.0:
                         #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
 
-                        # if template and invoice.partner_id.email and not invoice.invoice_payment_term_id and invoice.amount_residual == 0.0:
-                        #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
+                        if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.invoice_payment_term_id.thirty_days_term and invoice.amount_residual == 0.0 and (not invoice.fiscal_position_id or invoice.fiscal_position_id != invoice.company_id.olympia_fiscal_id):
+                            template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
 
                         if not invoice.invoice_payment_term_id and invoice.amount_residual > 0.0:
                             self.env['mail.activity'].create({
