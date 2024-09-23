@@ -1,6 +1,6 @@
 {
     'name': 'Legere Sales',
-    'version': '1.0.11',
+    'version': '1.0.12',
     'category': 'Sales/Sales',
     'summary': """customization related to sales module""",
     'description': """

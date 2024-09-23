@@ -25,6 +25,17 @@ class AccountPaymentRegister(models.TransientModel):
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    has_delivery_error = fields.Boolean(compute='_compute_has_delivery_error', store=True)
+
+    @api.depends('picking_ids', 'picking_ids.state')
+    def _compute_has_delivery_error(self):
+        for order in self:
+            if order.picking_ids.filtered(lambda p: p.picking_type_code == 'outgoing'):
+                order.has_delivery_error = False
+                if all(picking.state in ['cancel', 'done'] for picking in order.picking_ids.filtered(lambda p: p.picking_type_code == 'outgoing')):
+                    if all(picking.state not in ['cancel', 'done'] for picking in order.picking_ids.filtered(lambda p: p.picking_type_code != 'outgoing')):
+                        order.has_delivery_error = True
+
     @api.depends('invoice_ids')
     def _compute_payment_status(self):
         for record in self:
