@@ -29,7 +29,7 @@ class SaleOrder(models.Model):
     def _compute_payment_status(self):
         for record in self:
             record.payment_status = 'No invoice'
-            payment_states = record.invoice_ids.mapped('payment_state')
+            payment_states = record.invoice_ids.filtered(lambda x: x.state != 'cancel' and x.move_type == 'out_invoice').mapped('payment_state')
             status_length = len(payment_states)
             if 'partial' in payment_states:
                 record.payment_status = 'Partially Paid'
@@ -59,7 +59,7 @@ class SaleOrder(models.Model):
     def _compute_amount_due(self):
         for record in self:
             amount_due = 0
-            for invoice in record.invoice_ids:
+            for invoice in record.invoice_ids.filtered(lambda x: x.state != 'cancel' and x.move_type == 'out_invoice'):
                 amount_due = amount_due + (invoice.amount_total - invoice.amount_residual)
             record.amount_due = record.amount_total - amount_due
 
