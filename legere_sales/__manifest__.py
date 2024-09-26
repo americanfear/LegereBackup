@@ -1,6 +1,6 @@
 {
     'name': 'Legere Sales',
-    'version': '1.0.13',
+    'version': '1.0.14',
     'category': 'Sales/Sales',
     'summary': """customization related to sales module""",
     'description': """
@@ -14,6 +14,7 @@
     'depends': ['sale_management', 'sale_project', 'sale_stock', 'sale_mrp', 'purchase_stock', 'stock_dropshipping', 'base_automation', 'legere_legacy', 'legere_sales_commission'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'data/data.xml',
         'views/product_template_views.xml',
         'views/res_partner_views.xml',
