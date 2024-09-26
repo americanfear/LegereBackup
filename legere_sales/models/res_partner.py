@@ -1,5 +1,10 @@
 from odoo import api, fields, models, _
 
+class AccountPaymentTerm(models.Model):
+    _inherit = "account.payment.term"
+
+    thirty_days_term = fields.Boolean(string='30 Days Term')
+
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
