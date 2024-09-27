@@ -55,3 +55,16 @@ class StockPicking(models.Model):
         res = super().button_validate()
         self.action_email_tracking_info()
         return res
+
+    def legere_update_tracking_info(self, tracking_num, tracking_url):
+        for record in self:
+            if record.carrier_tracking_ref != tracking_num:
+                # If tracking changes, comment about the change
+                if record.carrier_tracking_ref:
+                    record.message_post(body=f'Tracking Reference: {record.carrier_tracking_ref} ➡ {tracking_num}', message_type='comment')
+                # Update the tracking info, note the tracking link, and email the tracking info
+                record.carrier_tracking_ref = tracking_num
+                message_body = f'Tracking Link: <a href="{tracking_url}" target="_blank">{tracking_num}</a>'
+                record.message_post(body=message_body, message_type='comment')
+                record.action_email_tracking_info()
+        return False

@@ -49,3 +49,29 @@ class SaleOrder(models.Model):
         # Loop through New Non-Olympia Orders and send each one an initial email
         for order in new_non_olympia_orders:
             order.action_email_order_confirmation()
+
+    def legere_validate_dropship(self):
+        for order in self:
+            _logger.info(f'||||VALIDATE DROPSHIP: Sale order: {order}, picking_ids: {order.picking_ids}')
+            for picking in order.picking_ids:
+                # Only call validate if in the proper state
+                # TODO: Handle case where it is in an unexpected state
+                # TODO: Handle more than 1 dropship record
+                _logger.info(f'||||VALIDATE DROPSHIP: picking: {picking}')
+                if picking.state in ['confirmed', 'assigned'] and picking.picking_type_id.name == "Dropship":
+                    _logger.info(f'||||VALIDATE DROPSHIP: button_validate')
+                    try:
+                        picking.action_put_in_pack()
+                    except Exception:
+                        _logger.info(f'||||VALIDATE DROPSHIP:Exception: {Exception}')
+                    picking.button_validate()
+
+    def legere_get_dropship(self):
+        order = self
+        dropships = []
+        _logger.info(f'||||GET DROPSHIP: Sale order: {order}, picking_ids: {order.picking_ids}')
+        for picking in order.picking_ids:
+            _logger.info(f'||||GET DROPSHIP: picking: {picking}')
+            if picking.picking_type_id.name == "Dropship":
+                dropships.append(picking)
+        return dropships
