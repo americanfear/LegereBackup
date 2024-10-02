@@ -1,6 +1,6 @@
 {
     'name': 'Legere Legacy',
-    'version': '1.0.1',
+    'version': '1.0.2',
     'category': 'Tools',
     'summary': """Store Legacy Data""",
     'description': """
