@@ -25,11 +25,22 @@ class AccountPaymentRegister(models.TransientModel):
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    has_delivery_error = fields.Boolean(compute='_compute_has_delivery_error', store=True)
+
+    @api.depends('picking_ids', 'picking_ids.state')
+    def _compute_has_delivery_error(self):
+        for order in self:
+            if order.picking_ids.filtered(lambda p: p.picking_type_code == 'outgoing'):
+                order.has_delivery_error = False
+                if all(picking.state in ['cancel', 'done'] for picking in order.picking_ids.filtered(lambda p: p.picking_type_code == 'outgoing')):
+                    if all(picking.state not in ['cancel', 'done'] for picking in order.picking_ids.filtered(lambda p: p.picking_type_code != 'outgoing')):
+                        order.has_delivery_error = True
+
     @api.depends('invoice_ids')
     def _compute_payment_status(self):
         for record in self:
             record.payment_status = 'No invoice'
-            payment_states = record.invoice_ids.mapped('payment_state')
+            payment_states = record.invoice_ids.filtered(lambda x: x.state != 'cancel' and x.move_type == 'out_invoice').mapped('payment_state')
             status_length = len(payment_states)
             if 'partial' in payment_states:
                 record.payment_status = 'Partially Paid'
@@ -59,7 +70,7 @@ class SaleOrder(models.Model):
     def _compute_amount_due(self):
         for record in self:
             amount_due = 0
-            for invoice in record.invoice_ids:
+            for invoice in record.invoice_ids.filtered(lambda x: x.state != 'cancel' and x.move_type == 'out_invoice'):
                 amount_due = amount_due + (invoice.amount_total - invoice.amount_residual)
             record.amount_due = record.amount_total - amount_due
 
@@ -179,12 +190,12 @@ class SaleOrder(models.Model):
                                         .filtered_domain([('account_id', '=', account.id), ('reconciled', '=', False)])\
                                         .sudo().reconcile()
 
-                        # template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
+                        template = self.env.ref('account.email_template_edi_invoice', raise_if_not_found=False)
                         # if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.amount_residual != 0.0:
                         #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
 
-                        # if template and invoice.partner_id.email and not invoice.invoice_payment_term_id and invoice.amount_residual == 0.0:
-                        #     template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
+                        if template and invoice.partner_id.email and invoice.invoice_payment_term_id and invoice.invoice_payment_term_id.thirty_days_term and invoice.amount_residual != 0.0 and (not invoice.fiscal_position_id or invoice.fiscal_position_id != invoice.company_id.olympia_fiscal_id):
+                            template.with_context({'mark_invoice_as_sent': True}).send_mail(invoice.id, force_send=True)
 
                         if not invoice.invoice_payment_term_id and invoice.amount_residual > 0.0:
                             self.env['mail.activity'].create({

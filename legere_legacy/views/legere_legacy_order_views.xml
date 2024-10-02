@@ -60,6 +60,7 @@
                             <page string='Parts'>
                                 <field name="OrderParts">
                                     <tree>
+                                        <field name="product_id"/>
                                         <field name="ProductNumber"/>
                                         <field name="ProductDescription"/>
                                         <field name="Size"/>
@@ -71,6 +72,7 @@
                                     <form>
                                         <group>
                                             <group>
+                                                <field name="product_id"/>
                                                 <field name="ProductNumber"/>
                                                 <field name="ProductDescription"/>
                                                 <field name="Size"/>

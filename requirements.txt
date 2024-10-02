@@ -1,4 +1,6 @@
     easypost==7.9.0
+    woocommerce==2.1.1
+
     # twilio==7.16.1
     # plaid-python==14.0.0
     # boto3==1.26.55
